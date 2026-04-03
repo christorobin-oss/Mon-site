@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SILEX — Votre présence en ligne, enfin.</title>
+  <!-- ╔══════════════════════════════════════════════════════════╗
+       ║  SILEX · Site vitrine · version 2.0                     ║
+       ║  Pour recevoir les leads par email :                     ║
+       ║  → Modifiez SILEX_EMAIL ci-dessous avec votre adresse   ║
+       ║  Accéder aux leads collectés :                           ║
+       ║  → Tapez "ADMIN" au clavier n'importe où sur le site    ║
+       ╚══════════════════════════════════════════════════════════╝ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET ─────────────────────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --gold:      #c8a45a;
+      --gold-lt:   #e2c07e;
+      --gold-dim:  rgba(200,164,90,.12);
+      --gold-glow: rgba(200,164,90,.28);
+      --bg:        #080810;
+      --bg2:       #0c0c18;
+      --bg3:       #111122;
+      --text:      #eeecf0;
+      --muted:     #7a7a96;
+      --border:    rgba(255,255,255,.06);
+      --border-g:  rgba(200,164,90,.2);
+      --r:         14px;
+      --ease:      cubic-bezier(.22,.68,0,1.2);
+      --ease-s:    cubic-bezier(.25,.46,.45,.94);
+    }
+    html { scroll-behavior:smooth; }
+    body {
+      background:var(--bg);
+      color:var(--text);
+      font-family:'DM Sans', sans-serif;
+      font-weight:400;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+    ::selection { background:var(--gold); color:#000; }
+
+    /* ── CANVAS / GRID ─────────────────────────────────────────── */
+    #bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+    .grid-lines {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(200,164,90,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,164,90,.025) 1px, transparent 1px);
+      background-size:80px 80px;
+    }
+    .cursor-blob {
+      position:fixed; width:480px; height:480px; border-radius:50%;
+      background:radial-gradient(circle, rgba(200,164,90,.045), transparent 68%);
+      pointer-events:none; z-index:0;
+      transform:translate(-50%,-50%);
+      transition:left .14s ease-out, top .14s ease-out;
+    }
+
+    /* ── NAV ───────────────────────────────────────────────────── */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      padding:22px 6%;
+      display:flex; align-items:center; justify-content:space-between;
+      transition:all .4s var(--ease-s);
+    }
+    nav.scrolled {
+      background:rgba(8,8,16,.9);
+      backdrop-filter:blur(28px) saturate(1.5);
+      border-bottom:1px solid var(--border);
+      padding:15px 6%;
+    }
+    .logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .logo-mark { width:32px; height:32px; flex-shrink:0; }
+    .logo-word {
+      font-family:'Syne', sans-serif;
+      font-size:1.2rem; font-weight:800;
+      letter-spacing:.22em; color:var(--text);
+    }
+    .nav-links { display:flex; align-items:center; gap:34px; list-style:none; }
+    .nav-links a {
+      color:var(--muted); text-decoration:none;
+      font-size:.8rem; font-weight:500; letter-spacing:.05em;
+      transition:color .2s;
+    }
+    .nav-links a:hover { color:var(--text); }
+    .nav-cta {
+      padding:9px 22px; border:1px solid var(--border-g);
+      border-radius:50px; background:var(--gold-dim);
+      color:var(--gold) !important; font-weight:600 !important;
+      transition:background .25s, box-shadow .25s, color .25s !important;
+    }
+    .nav-cta:hover {
+      background:var(--gold) !important; color:#000 !important;
+      box-shadow:0 0 30px var(--gold-glow) !important;
+    }
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; }
+    .hamburger span {
+      display:block; width:22px; height:1.5px;
+      background:var(--text); border-radius:2px;
+      transition:transform .3s, opacity .3s;
+    }
+
+    /* ── HERO ──────────────────────────────────────────────────── */
+    #hero {
+      position:relative; z-index:1;
+      min-height:100vh;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center; text-align:center;
+      padding:160px 6% 120px;
+    }
+    .hero-eyebrow {
+      display:inline-flex; align-items:center; gap:10px;
+      padding:5px 18px; border:1px solid var(--border-g);
+      border-radius:50px; background:rgba(200,164,90,.07);
+      font-size:.68rem; font-weight:600; letter-spacing:.16em;
+      text-transform:uppercase; color:var(--gold); margin-bottom:42px;
+      opacity:0; animation:up .7s var(--ease-s) .2s forwards;
+    }
+    .dot-live {
+      width:5px; height:5px; border-radius:50%;
+      background:var(--gold); animation:blink 2s ease-in-out infinite;
+    }
+    .hero-h1 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:clamp(3.4rem,8vw,7rem);
+      font-weight:700;
+      line-height:.98;
+      letter-spacing:-.02em;
+      max-width:900px;
+      opacity:0; animation:up .9s var(--ease-s) .35s forwards;
+    }
+    .hero-h1 em {
+      font-style:italic;
+      background:linear-gradient(100deg, var(--gold-lt) 0%, var(--gold) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-p {
+      margin-top:28px; font-size:1rem; color:var(--muted);
+      line-height:1.8; max-width:480px; font-weight:300;
+      opacity:0; animation:up .8s var(--ease-s) .55s forwards;
+    }
+    .hero-btns {
+      margin-top:52px; display:flex; gap:14px; flex-wrap:wrap;
+      justify-content:center;
+      opacity:0; animation:up .8s var(--ease-s) .75s forwards;
+    }
+    .btn {
+      padding:14px 32px; border-radius:50px;
+      font-family:'DM Sans', sans-serif;
+      font-size:.875rem; font-weight:600;
+      text-decoration:none; letter-spacing:.02em;
+      transition:transform .2s, box-shadow .3s;
+      display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+      border:none;
+    }
+    .btn-gold { background:var(--gold); color:#000; box-shadow:0 0 0 rgba(200,164,90,0); }
+    .btn-gold:hover { transform:translateY(-2px); box-shadow:0 12px 40px rgba(200,164,90,.4); }
+    .btn-ghost { background:transparent; color:var(--text); border:1px solid var(--border); }
+    .btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
+    .hero-scroll {
+      position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+      color:var(--muted); font-size:.65rem; letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:0; animation:up .8s var(--ease-s) 1.1s forwards;
+    }
+    .scroll-thread {
+      width:1px; height:52px;
+      background:linear-gradient(to bottom, var(--gold), transparent);
+      animation:thread 2.2s ease-in-out infinite;
+    }
+
+    /* ── SECTION UTIL ──────────────────────────────────────────── */
+    section { position:relative; z-index:1; }
+    .wrap { max-width:1180px; margin:0 auto; padding:0 6%; }
+    .tag-line {
+      display:inline-flex; align-items:center; gap:10px;
+      font-family:'DM Sans', sans-serif;
+      font-size:.66rem; font-weight:700; letter-spacing:.16em;
+      text-transform:uppercase; color:var(--gold); margin-bottom:20px;
+    }
+    .tag-line::before { content:''; width:22px; height:1px; background:var(--gold); }
+    .s-title {
+      font-family:'Cormorant Garamond', serif;
+      font-size:clamp(2.2rem,4.5vw,3.4rem);
+      font-weight:700; line-height:1.05; letter-spacing:-.015em;
+    }
+    .s-sub {
+      color:var(--muted); font-size:.9rem; font-weight:300;
+      line-height:1.8; max-width:460px; margin-top:16px;
+    }
+
+    /* ── NUMBERS ───────────────────────────────────────────────── */
+    #numbers { padding:80px 0; }
+    .num-row {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      border:1px solid var(--border); border-radius:var(--r); overflow:hidden;
+    }
+    .num-cell {
+      padding:48px 32px; text-align:center; background:var(--bg2);
+      border-right:1px solid var(--border); transition:background .3s;
+    }
+    .num-cell:last-child { border-right:none; }
+    .num-cell:hover { background:var(--bg3); }
+    .num-val {
+      display:block; font-family:'Cormorant Garamond', serif;
+      font-size:clamp(2.6rem,4.5vw,3.8rem);
+      font-weight:700; color:var(--gold); line-height:1;
+    }
+    .num-desc { margin-top:10px; font-size:.76rem; color:var(--muted); letter-spacing:.02em; }
+
+    /* ── SERVICES ──────────────────────────────────────────────── */
+    #services { padding:130px 0; }
+    .svc-head {
+      display:flex; justify-content:space-between;
+      align-items:flex-end; gap:40px; margin-bottom:60px; flex-wrap:wrap;
+    }
+    .svc-grid {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:1px; background:var(--border);
+      border:1px solid var(--border); border-radius:var(--r); overflow:hidden;
+    }
+    .svc-card {
+      background:var(--bg2); padding:44px 38px;
+      position:relative; overflow:hidden; transition:background .3s;
+    }
+    .svc-card::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(140deg, var(--gold-dim), transparent 55%);
+      opacity:0; transition:opacity .4s;
+    }
+    .svc-card:hover { background:var(--bg3); }
+    .svc-card:hover::after { opacity:1; }
+    .svc-ico {
+      width:46px; height:46px; border-radius:12px;
+      background:var(--gold-dim); border:1px solid var(--border-g);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.25rem; margin-bottom:26px;
+    }
+    .svc-card h3 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.3rem; font-weight:700; margin-bottom:12px;
+    }
+    .svc-card p { font-size:.86rem; color:var(--muted); line-height:1.75; font-weight:300; }
+    .svc-pill {
+      display:inline-block; margin-top:22px; padding:3px 12px;
+      border:1px solid var(--border-g); border-radius:20px;
+      font-size:.66rem; letter-spacing:.1em;
+      color:var(--gold); font-weight:600; text-transform:uppercase;
+    }
+
+    /* ── PROCESS ───────────────────────────────────────────────── */
+    #process { padding:130px 0; background:var(--bg2); }
+    .proc-wrap {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:80px; align-items:start;
+    }
+    .steps { display:flex; flex-direction:column; margin-top:50px; }
+    .step {
+      display:flex; gap:26px; padding:30px 0;
+      border-bottom:1px solid var(--border);
+      transition:padding-left .3s var(--ease-s); cursor:default;
+    }
+    .step:first-child { padding-top:0; }
+    .step:last-child { border-bottom:none; padding-bottom:0; }
+    .step:hover { padding-left:10px; }
+    .step-n {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.1rem; font-weight:600; letter-spacing:.04em;
+      color:var(--gold); opacity:.25; min-width:28px; padding-top:2px;
+      transition:opacity .3s;
+    }
+    .step:hover .step-n { opacity:1; }
+    .step h4 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.2rem; font-weight:700; margin-bottom:8px;
+    }
+    .step p { font-size:.84rem; color:var(--muted); line-height:1.7; font-weight:300; }
+
+    /* ── EXAMPLE SITES ─────────────────────────────────────────── */
+    .ex-col { position:relative; }
+    .ex-col-label {
+      font-size:.66rem; font-weight:700; letter-spacing:.14em;
+      text-transform:uppercase; color:var(--gold);
+      margin-bottom:16px; display:flex; align-items:center; gap:8px;
+    }
+    .ex-col-label::before { content:''; width:16px; height:1px; background:var(--gold); }
+    .ex-tabs {
+      display:flex; gap:6px; margin-bottom:18px;
+    }
+    .ex-tab {
+      padding:6px 16px; border-radius:50px; cursor:pointer;
+      font-family:'DM Sans', sans-serif;
+      font-size:.72rem; font-weight:600; letter-spacing:.04em;
+      border:1px solid var(--border); background:transparent;
+      color:var(--muted); transition:all .25s;
+    }
+    .ex-tab.active {
+      border-color:var(--border-g); background:var(--gold-dim);
+      color:var(--gold);
+    }
+    .ex-tab:hover:not(.active) { border-color:var(--border-g); color:var(--text); }
+    .ex-browsers { position:relative; }
+    .ex-browser {
+      display:none;
+      background:rgba(20,20,36,.95);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:16px; overflow:hidden;
+      box-shadow:0 24px 60px rgba(0,0,0,.5);
+      animation:fadeIn .3s var(--ease-s);
+    }
+    .ex-browser.active { display:block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .ex-bar {
+      height:26px; background:rgba(255,255,255,.04);
+      border-bottom:1px solid rgba(255,255,255,.06);
+      display:flex; align-items:center; gap:6px; padding:0 12px;
+    }
+    .ex-addr {
+      flex:1; height:12px; background:rgba(255,255,255,.06);
+      border-radius:4px; margin-left:8px;
+      font-size:0; /* text hidden, visual only */
+    }
+    .d { width:7px; height:7px; border-radius:50%; }
+    .dr { background:#ff5f57; } .dy { background:#febc2e; } .dg { background:#28c840; }
+    .ex-body { padding:0; }
+    .ex-badge {
+      text-align:center; padding:8px;
+      font-size:.64rem; color:var(--gold);
+      font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      border-top:1px solid rgba(200,164,90,.12);
+      background:rgba(200,164,90,.04);
+    }
+
+    /* Example site — Salon */
+    .ex-salon-nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 14px; background:#160a12;
+      border-bottom:1px solid rgba(200,80,120,.15);
+    }
+    .ex-salon-logo { color:#e8b0c8; font-size:8px; font-weight:700; letter-spacing:.08em; }
+    .ex-salon-links { display:flex; gap:10px; }
+    .ex-salon-links span { color:#9a5070; font-size:6.5px; }
+    .ex-salon-hero {
+      background:linear-gradient(135deg, #240d1a 0%, #160a12 100%);
+      padding:18px 14px 14px;
+    }
+    .ex-salon-h1 { color:#f0c0d8; font-size:10.5px; font-weight:700; line-height:1.3; margin-bottom:6px; }
+    .ex-salon-sub { color:#9a5070; font-size:7px; line-height:1.5; margin-bottom:10px; }
+    .ex-salon-btn {
+      background:#b06080; color:#fff; font-size:6px; font-weight:700;
+      padding:4px 10px; border-radius:20px; display:inline-block;
+    }
+    .ex-cards-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; padding:8px; }
+    .ex-card-mini {
+      border-radius:6px; padding:8px 6px; text-align:center;
+    }
+    .ex-card-mini .ico { font-size:14px; display:block; margin-bottom:3px; }
+    .ex-card-mini .lbl { font-size:6px; font-weight:600; display:block; margin-bottom:2px; }
+    .ex-card-mini .prc { font-size:5.5px; display:block; }
+
+    /* Example site — Garage */
+    .ex-garage-nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 14px; background:#0d1219;
+      border-bottom:1px solid rgba(50,120,200,.15);
+    }
+    .ex-garage-logo { color:#7ab0e8; font-size:8px; font-weight:700; letter-spacing:.08em; }
+    .ex-garage-links { display:flex; gap:10px; }
+    .ex-garage-links span { color:#4a6880; font-size:6.5px; }
+    .ex-garage-hero {
+      background:linear-gradient(135deg, #0e1822 0%, #0d1219 100%);
+      padding:18px 14px 14px;
+    }
+    .ex-garage-h1 { color:#c0d8f8; font-size:10.5px; font-weight:700; line-height:1.3; margin-bottom:6px; }
+    .ex-garage-sub { color:#4a6880; font-size:7px; line-height:1.5; margin-bottom:10px; }
+    .ex-garage-btn {
+      background:#3a78c8; color:#fff; font-size:6px; font-weight:700;
+      padding:4px 10px; border-radius:20px; display:inline-block;
+    }
+    .ex-garage-list { padding:8px 14px 10px; display:flex; flex-direction:column; gap:4px; }
+    .ex-garage-item {
+      display:flex; align-items:center; gap:6px;
+      background:#111e2e; border-radius:5px; padding:5px 8px;
+    }
+    .ex-garage-item .ico { font-size:9px; }
+    .ex-garage-item .txt { font-size:6.5px; color:#7ab0e8; font-weight:600; }
+
+    /* Example site — Restaurant */
+    .ex-resto-nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 14px; background:#0f0c08;
+      border-bottom:1px solid rgba(200,160,60,.15);
+    }
+    .ex-resto-logo { color:#e8c878; font-size:8px; font-weight:700; letter-spacing:.08em; }
+    .ex-resto-links { display:flex; gap:10px; }
+    .ex-resto-links span { color:#7a6030; font-size:6.5px; }
+    .ex-resto-hero {
+      background:linear-gradient(135deg, #1a1508 0%, #0f0c08 100%);
+      padding:18px 14px 14px;
+    }
+    .ex-resto-h1 { color:#f0d890; font-size:10.5px; font-weight:700; line-height:1.3; margin-bottom:6px; }
+    .ex-resto-sub { color:#7a6030; font-size:7px; line-height:1.5; margin-bottom:10px; }
+    .ex-resto-btn {
+      background:#c8a040; color:#000; font-size:6px; font-weight:700;
+      padding:4px 10px; border-radius:20px; display:inline-block;
+    }
+    .ex-resto-gallery { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; padding:8px; }
+    .ex-resto-img { height:36px; border-radius:5px; }
+
+    /* ── WHY ───────────────────────────────────────────────────── */
+    #why { padding:130px 0; }
+    .why-grid {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:1px; background:var(--border);
+      border:1px solid var(--border); border-radius:var(--r); overflow:hidden;
+    }
+    .why-item {
+      background:var(--bg2); padding:46px 44px;
+      display:flex; gap:22px; transition:background .3s;
+    }
+    .why-item:hover { background:var(--bg3); }
+    .why-ico { font-size:1.5rem; min-width:40px; margin-top:2px; }
+    .why-item h4 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.2rem; font-weight:700; margin-bottom:10px;
+    }
+    .why-item p { font-size:.855rem; color:var(--muted); line-height:1.75; font-weight:300; }
+
+    /* ── FAQ ───────────────────────────────────────────────────── */
+    #faq { padding:130px 0; background:var(--bg2); }
+    .faq-head { text-align:center; max-width:580px; margin:0 auto 70px; }
+    .faq-list { max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:0; }
+    .faq-item {
+      border-bottom:1px solid var(--border);
+    }
+    .faq-item:first-child { border-top:1px solid var(--border); }
+    .faq-q {
+      width:100%; background:transparent; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:space-between; gap:24px;
+      padding:26px 0; text-align:left;
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.2rem; font-weight:600;
+      color:var(--text); transition:color .2s;
+    }
+    .faq-q:hover { color:var(--gold); }
+    .faq-icon {
+      flex-shrink:0; width:26px; height:26px;
+      border:1px solid var(--border-g); border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--gold); font-size:1rem; font-family:'DM Sans', sans-serif;
+      transition:transform .3s var(--ease-s), background .25s;
+    }
+    .faq-item.open .faq-icon { transform:rotate(45deg); background:var(--gold-dim); }
+    .faq-a {
+      display:grid; grid-template-rows:0fr;
+      transition:grid-template-rows .4s var(--ease-s);
+    }
+    .faq-item.open .faq-a { grid-template-rows:1fr; }
+    .faq-a-inner {
+      overflow:hidden;
+      font-size:.9rem; color:var(--muted); line-height:1.8; font-weight:300;
+      padding-bottom:0;
+      transition:padding-bottom .3s;
+    }
+    .faq-item.open .faq-a-inner { padding-bottom:26px; }
+
+    /* ── TERRITORY ─────────────────────────────────────────────── */
+    #territory { padding:130px 0; }
+    .terr-inner {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:90px; align-items:center;
+    }
+    .pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:30px; }
+    .pill {
+      padding:7px 18px; border:1px solid var(--border); border-radius:50px;
+      font-size:.78rem; font-weight:500; color:var(--muted); background:var(--bg3);
+      transition:border-color .2s, color .2s;
+    }
+    .pill:hover, .pill.main { border-color:var(--gold); color:var(--gold); }
+    .terr-visual {
+      position:relative; background:var(--bg3);
+      border:1px solid var(--border); border-radius:24px; padding:52px;
+      min-height:360px; display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    .terr-glow {
+      position:absolute; inset:0;
+      background:radial-gradient(circle at 50% 55%, rgba(200,164,90,.09), transparent 65%);
+      pointer-events:none;
+    }
+    .rings { position:relative; width:180px; height:180px;
+      display:flex; align-items:center; justify-content:center; }
+    .ring {
+      position:absolute; border:1px solid rgba(200,164,90,.15);
+      border-radius:50%; animation:pulse-ring 3.4s ease-in-out infinite;
+    }
+    .ring:nth-child(1) { width:70px; height:70px; animation-delay:0s; }
+    .ring:nth-child(2) { width:120px; height:120px; animation-delay:.7s; }
+    .ring:nth-child(3) { width:180px; height:180px; animation-delay:1.4s; }
+    .center-dot {
+      width:32px; height:32px; background:var(--gold); border-radius:50%;
+      box-shadow:0 0 28px rgba(200,164,90,.7);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.85rem; z-index:1;
+    }
+
+    /* ── CTA ───────────────────────────────────────────────────── */
+    #cta { padding:140px 6%; text-align:center; position:relative; z-index:1; }
+    #cta::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse at 50% 50%, rgba(200,164,90,.07), transparent 68%);
+      pointer-events:none;
+    }
+    .cta-wrap { position:relative; max-width:720px; margin:0 auto; }
+    .cta-label {
+      display:inline-block; margin-bottom:30px; padding:5px 18px;
+      border:1px solid var(--border-g); border-radius:50px;
+      font-size:.66rem; font-weight:700; letter-spacing:.16em;
+      text-transform:uppercase; color:var(--gold);
+    }
+    .cta-h2 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:clamp(2.4rem,6vw,4.6rem);
+      font-weight:700; line-height:1.05; letter-spacing:-.02em;
+    }
+    .cta-h2 em { font-style:italic; color:var(--gold); }
+    .cta-p {
+      margin:20px auto 0; font-size:.9rem; color:var(--muted);
+      line-height:1.8; max-width:420px; font-weight:300;
+    }
+    .cta-form {
+      margin:44px auto 0;
+      display:flex; gap:10px; max-width:480px;
+      flex-wrap:wrap; justify-content:center;
+    }
+    .cta-input {
+      flex:1; min-width:210px; padding:14px 22px;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:50px; color:var(--text);
+      font-family:'DM Sans', sans-serif;
+      font-size:.875rem; outline:none;
+      transition:border-color .25s, box-shadow .25s;
+    }
+    .cta-input::placeholder { color:var(--muted); }
+    .cta-input:focus {
+      border-color:var(--gold); box-shadow:0 0 0 3px rgba(200,164,90,.12);
+    }
+    .cta-fine { margin-top:14px; font-size:.7rem; color:var(--muted); }
+
+    /* ── CGV MODAL ─────────────────────────────────────────────── */
+    .cgv-backdrop {
+      position:fixed; inset:0; z-index:200;
+      background:rgba(4,4,10,.88);
+      backdrop-filter:blur(16px);
+      opacity:0; pointer-events:none; transition:opacity .35s;
+      display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .cgv-backdrop.open { opacity:1; pointer-events:all; }
+    .cgv-modal {
+      background:var(--bg2); border:1px solid var(--border-g);
+      border-radius:20px; max-width:740px; width:100%;
+      max-height:85vh; overflow:hidden;
+      display:flex; flex-direction:column;
+      transform:translateY(20px) scale(.97);
+      transition:transform .35s var(--ease-s);
+    }
+    .cgv-backdrop.open .cgv-modal { transform:translateY(0) scale(1); }
+    .cgv-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:24px 32px; border-bottom:1px solid var(--border);
+      flex-shrink:0;
+    }
+    .cgv-header h3 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.4rem; font-weight:700;
+    }
+    .cgv-close {
+      width:32px; height:32px; border-radius:50%;
+      background:rgba(255,255,255,.06); border:none; cursor:pointer;
+      color:var(--muted); font-size:1rem;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .2s, color .2s;
+    }
+    .cgv-close:hover { background:rgba(255,255,255,.12); color:var(--text); }
+    .cgv-body { overflow-y:auto; padding:32px; flex:1; }
+    .cgv-body h4 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.05rem; font-weight:700;
+      color:var(--gold); margin:24px 0 8px;
+    }
+    .cgv-body h4:first-child { margin-top:0; }
+    .cgv-body p { font-size:.855rem; color:var(--muted); line-height:1.8; font-weight:300; }
+    .cgv-body strong { color:var(--text); font-weight:600; }
+
+    /* ── ADMIN PANEL ───────────────────────────────────────────── */
+    .admin-backdrop {
+      position:fixed; inset:0; z-index:300;
+      background:rgba(4,4,10,.95);
+      backdrop-filter:blur(20px);
+      opacity:0; pointer-events:none; transition:opacity .3s;
+      display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .admin-backdrop.open { opacity:1; pointer-events:all; }
+    .admin-modal {
+      background:var(--bg3); border:1px solid var(--border-g);
+      border-radius:20px; max-width:600px; width:100%;
+      max-height:80vh; overflow:hidden; display:flex; flex-direction:column;
+      transform:scale(.96); transition:transform .3s var(--ease-s);
+    }
+    .admin-backdrop.open .admin-modal { transform:scale(1); }
+    .admin-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:20px 28px; border-bottom:1px solid var(--border);
+      flex-shrink:0;
+    }
+    .admin-header h3 {
+      font-family:'Syne', sans-serif;
+      font-size:.95rem; font-weight:800; letter-spacing:.1em;
+      color:var(--gold);
+    }
+    .admin-body { overflow-y:auto; padding:24px 28px; flex:1; }
+    .admin-lead {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px; background:var(--bg2);
+      border:1px solid var(--border); border-radius:10px; margin-bottom:8px;
+    }
+    .admin-lead-phone { font-size:1rem; font-family:'Cormorant Garamond', serif; font-weight:600; }
+    .admin-lead-date { font-size:.72rem; color:var(--muted); }
+    .admin-empty { text-align:center; padding:40px; color:var(--muted); font-size:.9rem; }
+    .admin-clear {
+      margin-top:20px; width:100%; padding:10px;
+      background:transparent; border:1px solid rgba(255,80,80,.3);
+      border-radius:8px; color:rgba(255,80,80,.7); cursor:pointer;
+      font-family:'DM Sans', sans-serif; font-size:.78rem;
+      transition:all .2s;
+    }
+    .admin-clear:hover { background:rgba(255,80,80,.1); color:#ff5050; }
+
+    /* ── FOOTER ────────────────────────────────────────────────── */
+    footer {
+      position:relative; z-index:1;
+      padding:60px 6% 36px; border-top:1px solid var(--border);
+    }
+    .foot-top {
+      display:flex; justify-content:space-between; align-items:flex-start;
+      gap:48px; margin-bottom:44px; flex-wrap:wrap;
+    }
+    .foot-brand { max-width:280px; }
+    .foot-brand p { margin-top:14px; font-size:.82rem; color:var(--muted); line-height:1.75; font-weight:300; }
+    .foot-cols { display:flex; gap:60px; flex-wrap:wrap; }
+    .foot-col h5 {
+      font-size:.65rem; font-weight:700; letter-spacing:.14em;
+      text-transform:uppercase; color:var(--muted); margin-bottom:18px;
+    }
+    .foot-col ul { list-style:none; display:flex; flex-direction:column; gap:11px; }
+    .foot-col a {
+      font-size:.82rem; color:var(--muted); text-decoration:none;
+      transition:color .2s; cursor:pointer;
+    }
+    .foot-col a:hover { color:var(--gold); }
+    .foot-bot {
+      display:flex; justify-content:space-between; align-items:center;
+      gap:16px; flex-wrap:wrap; padding-top:22px; border-top:1px solid var(--border);
+    }
+    .foot-bot p { font-size:.74rem; color:var(--muted); }
+
+    /* ── REVEAL ────────────────────────────────────────────────── */
+    .r0 {
+      opacity:0; transform:translateY(26px);
+      transition:opacity .7s var(--ease-s), transform .7s var(--ease-s);
+    }
+    .r0.on { opacity:1; transform:translateY(0); }
+    .d1 { transition-delay:.1s; } .d2 { transition-delay:.2s; }
+    .d3 { transition-delay:.3s; } .d4 { transition-delay:.4s; }
+
+    /* ── KEYFRAMES ─────────────────────────────────────────────── */
+    @keyframes up { to { opacity:1; transform:translateY(0); } }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+    @keyframes thread { 0%,100% { transform:scaleY(1); } 50% { transform:scaleY(.55); } }
+    @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
+    @keyframes pulse-ring {
+      0%,100% { opacity:.15; transform:scale(1); }
+      50%      { opacity:.4; transform:scale(1.06); }
+    }
+
+    /* ── MOBILE MENU ───────────────────────────────────────────── */
+    .mob-menu {
+      position:fixed; inset:0; z-index:99;
+      background:rgba(8,8,16,.97); backdrop-filter:blur(24px);
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:36px; opacity:0;
+      pointer-events:none; transition:opacity .3s;
+    }
+    .mob-menu.open { opacity:1; pointer-events:all; }
+    .mob-menu a {
+      font-family:'Cormorant Garamond', serif;
+      font-size:2.6rem; font-weight:700;
+      color:var(--text); text-decoration:none; transition:color .2s;
+    }
+    .mob-menu a:hover { color:var(--gold); }
+    .mob-close {
+      position:absolute; top:24px; right:6%;
+      font-size:1.4rem; cursor:pointer;
+      color:var(--muted); transition:color .2s;
+    }
+    .mob-close:hover { color:var(--text); }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width:900px) {
+      .nav-links { display:none; }
+      .hamburger { display:flex; }
+      .num-row { grid-template-columns:repeat(2,1fr); }
+      .svc-grid { grid-template-columns:1fr; }
+      .proc-wrap { grid-template-columns:1fr; }
+      .why-grid { grid-template-columns:1fr; }
+      .terr-inner { grid-template-columns:1fr; }
+      .terr-visual { display:none; }
+      .foot-top { flex-direction:column; }
+    }
+    @media (max-width:520px) {
+      .hero-h1 { font-size:2.8rem; }
+      .num-row { grid-template-columns:1fr 1fr; }
+      .proc-wrap { gap:50px; }
+      .ex-tabs { flex-wrap:wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div class="cursor-blob" id="blob"></div>
+  <canvas id="bg-canvas"></canvas>
+  <div class="grid-lines"></div>
+
+  <!-- Mobile menu -->
+  <div class="mob-menu" id="mobMenu">
+    <span class="mob-close" id="mobClose">✕</span>
+    <a href="#services" class="mml">Services</a>
+    <a href="#process" class="mml">Méthode</a>
+    <a href="#faq" class="mml">FAQ</a>
+    <a href="#cta" class="mml" style="color:var(--gold)">Démarrer →</a>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a class="logo" href="#">
+      <svg class="logo-mark" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="18,1 35,12 35,28 18,39 1,28 1,12" fill="none" stroke="#c8a45a" stroke-width="1.5"/>
+        <polygon points="18,1 35,12 18,16" fill="#c8a45a" opacity="0.9"/>
+        <polygon points="18,16 35,12 35,28" fill="#c8a45a" opacity="0.25"/>
+        <circle cx="18" cy="16" r="2.2" fill="#e8c97a"/>
+      </svg>
+      <span class="logo-word">SILEX</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#process">Méthode</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#why">Pourquoi SILEX</a></li>
+      <li><a class="nav-cta" href="#cta">Démarrer →</a></li>
+    </ul>
+    <div class="hamburger" id="burger">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-eyebrow">
+      <span class="dot-live"></span>
+      Agence web · Sites vitrines pour artisans &amp; commerçants
+    </div>
+    <h1 class="hero-h1">
+      Votre commerce.<br><em>Visible partout.</em>
+    </h1>
+    <p class="hero-p">
+      SILEX crée des sites vitrines professionnels pour les artisans, commerçants et TPE/PME qui méritent d'exister en ligne.
+    </p>
+    <div class="hero-btns">
+      <a class="btn btn-gold" href="#cta">Obtenir mon site →</a>
+      <a class="btn btn-ghost" href="#services">Découvrir nos offres</a>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-thread"></div>
+      Défiler
+    </div>
+  </section>
+
+  <!-- NUMBERS -->
+  <section id="numbers">
+    <div class="wrap">
+      <div class="num-row r0">
+        <div class="num-cell">
+          <span class="num-val" data-to="48" data-suf="h">0</span>
+          <span class="num-desc">Délai de livraison</span>
+        </div>
+        <div class="num-cell">
+          <span class="num-val" data-to="100" data-suf="%">0</span>
+          <span class="num-desc">Clients satisfaits</span>
+        </div>
+        <div class="num-cell">
+          <span class="num-val" data-static="Sur devis">Sur devis</span>
+          <span class="num-desc">Prix transparents, sans surprise</span>
+        </div>
+        <div class="num-cell">
+          <span class="num-val" data-static="Local">Local</span>
+          <span class="num-desc">Interlocuteur unique près de chez vous</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="wrap">
+      <div class="svc-head">
+        <div>
+          <div class="tag-line r0">Ce qu'on fait</div>
+          <h2 class="s-title r0 d1">Des sites qui<br>travaillent pour vous.</h2>
+        </div>
+        <p class="s-sub r0 d2">
+          Une présence en ligne soignée et rapide. Vous vous occupez de votre métier — on gère le reste.
+        </p>
+      </div>
+      <div class="svc-grid">
+        <div class="svc-card r0">
+          <div class="svc-ico">🎨</div>
+          <h3>Design sur-mesure</h3>
+          <p>Un site élégant, pensé pour votre secteur. Vos services, vos horaires, vos photos — tout ce que vos clients cherchent.</p>
+          <span class="svc-pill">Inclus</span>
+        </div>
+        <div class="svc-card r0 d1">
+          <div class="svc-ico">📱</div>
+          <h3>100 % mobile &amp; rapide</h3>
+          <p>Votre site s'affiche parfaitement sur smartphone. Chargement instantané pour ne perdre aucun visiteur.</p>
+          <span class="svc-pill">Responsive</span>
+        </div>
+        <div class="svc-card r0 d2">
+          <div class="svc-ico">📍</div>
+          <h3>Référencement local</h3>
+          <p>Votre fiche Google Business configurée, votre site optimisé pour apparaître quand vos clients vous cherchent.</p>
+          <span class="svc-pill">SEO inclus</span>
+        </div>
+        <div class="svc-card r0">
+          <div class="svc-ico">✉️</div>
+          <h3>Formulaire de contact</h3>
+          <p>Vos clients vous écrivent directement depuis le site. Vous recevez les demandes sur votre email ou WhatsApp.</p>
+          <span class="svc-pill">Sans abonnement</span>
+        </div>
+        <div class="svc-card r0 d1">
+          <div class="svc-ico">🔒</div>
+          <h3>Hébergement &amp; domaine</h3>
+          <p>Nom de domaine, hébergement sécurisé HTTPS, certificat SSL. Tout est géré. Aucune compétence technique requise.</p>
+          <span class="svc-pill">Clé en main</span>
+        </div>
+        <div class="svc-card r0 d2">
+          <div class="svc-ico">🛠️</div>
+          <h3>Support &amp; évolutions</h3>
+          <p>Besoin de changer vos horaires ou ajouter une photo ? Un interlocuteur disponible, pas un ticket de support anonyme.</p>
+          <span class="svc-pill">Humain</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="wrap">
+      <div class="proc-wrap">
+
+        <!-- LEFT: Steps -->
+        <div>
+          <div class="tag-line r0">Notre méthode</div>
+          <h2 class="s-title r0 d1">De zéro à en ligne<br>en 4 étapes.</h2>
+          <div class="steps">
+            <div class="step r0">
+              <span class="step-n">01</span>
+              <div>
+                <h4>Prise de contact</h4>
+                <p>Un échange de 10 minutes pour comprendre votre activité et vos besoins. Sans jargon, sans engagement.</p>
+              </div>
+            </div>
+            <div class="step r0 d1">
+              <span class="step-n">02</span>
+              <div>
+                <h4>Devis clair &amp; gratuit</h4>
+                <p>Prix fixe annoncé dès le départ, délais précis, contenu inclus. Pas de mauvaise surprise à la facture.</p>
+              </div>
+            </div>
+            <div class="step r0 d2">
+              <span class="step-n">03</span>
+              <div>
+                <h4>Création de votre site</h4>
+                <p>Votre site est conçu en moins de 48h. Vous validez avant la mise en ligne. Modifications illimitées.</p>
+              </div>
+            </div>
+            <div class="step r0 d3">
+              <span class="step-n">04</span>
+              <div>
+                <h4>Mise en ligne &amp; suivi</h4>
+                <p>Votre site est live, votre fiche Google configurée. On reste là pour tout ajustement futur.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Example site previews -->
+        <div class="ex-col r0 d2">
+          <div class="ex-col-label">Exemples de réalisations</div>
+          <div class="ex-tabs">
+            <button class="ex-tab active" onclick="setEx(0)">Coiffure</button>
+            <button class="ex-tab" onclick="setEx(1)">Mécanique</button>
+            <button class="ex-tab" onclick="setEx(2)">Restauration</button>
+          </div>
+          <div class="ex-browsers">
+
+            <!-- Example 1: Salon de coiffure -->
+            <div class="ex-browser active" id="ex0">
+              <div class="ex-bar">
+                <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
+                <div class="ex-addr"></div>
+                <span style="font-size:7px;color:#7a7a96;margin-left:6px;white-space:nowrap;">elise-coiffure.fr</span>
+              </div>
+              <div class="ex-body">
+                <div class="ex-salon-nav">
+                  <span class="ex-salon-logo">✂ ÉLISE COIFFURE</span>
+                  <div class="ex-salon-links">
+                    <span>Services</span><span>Tarifs</span><span>Contact</span>
+                  </div>
+                </div>
+                <div class="ex-salon-hero">
+                  <div class="ex-salon-h1">Sublimez votre beauté,<br>à deux pas de chez vous.</div>
+                  <div class="ex-salon-sub">Colorations · Coupes · Soins capillaires<br>Sur rendez-vous uniquement — Ouvert 7j/7</div>
+                  <div class="ex-salon-btn">Prendre rendez-vous →</div>
+                </div>
+                <div class="ex-cards-3">
+                  <div class="ex-card-mini" style="background:#1e0e18;border:1px solid rgba(200,80,120,.2);border-radius:6px;">
+                    <span class="ico">✂️</span>
+                    <span class="lbl" style="color:#e8b0c8;">Coupe</span>
+                    <span class="prc" style="color:#9a5070;">dès 25 €</span>
+                  </div>
+                  <div class="ex-card-mini" style="background:#1e0e18;border:1px solid rgba(200,80,120,.2);border-radius:6px;">
+                    <span class="ico">🎨</span>
+                    <span class="lbl" style="color:#e8b0c8;">Couleur</span>
+                    <span class="prc" style="color:#9a5070;">dès 55 €</span>
+                  </div>
+                  <div class="ex-card-mini" style="background:#1e0e18;border:1px solid rgba(200,80,120,.2);border-radius:6px;">
+                    <span class="ico">💆</span>
+                    <span class="lbl" style="color:#e8b0c8;">Soin</span>
+                    <span class="prc" style="color:#9a5070;">dès 18 €</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ex-badge">✓ Livré en 40 h — Salon de coiffure</div>
+            </div>
+
+            <!-- Example 2: Garage -->
+            <div class="ex-browser" id="ex1">
+              <div class="ex-bar">
+                <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
+                <div class="ex-addr"></div>
+                <span style="font-size:7px;color:#7a7a96;margin-left:6px;white-space:nowrap;">garage-martin-auto.fr</span>
+              </div>
+              <div class="ex-body">
+                <div class="ex-garage-nav">
+                  <span class="ex-garage-logo">🔧 GARAGE MARTIN</span>
+                  <div class="ex-garage-links">
+                    <span>Prestations</span><span>Devis</span><span>Contact</span>
+                  </div>
+                </div>
+                <div class="ex-garage-hero">
+                  <div class="ex-garage-h1">Expert en mécanique<br>depuis 20 ans.</div>
+                  <div class="ex-garage-sub">Révisions · Diagnostics · Pneumatiques<br>Devis gratuit — Réponse en 2h</div>
+                  <div class="ex-garage-btn">Demander un devis →</div>
+                </div>
+                <div class="ex-garage-list">
+                  <div class="ex-garage-item">
+                    <span class="ico">🔧</span>
+                    <span class="txt">Révision complète — vidange, filtres, freins</span>
+                  </div>
+                  <div class="ex-garage-item">
+                    <span class="ico">🔍</span>
+                    <span class="txt">Diagnostic électronique — valise homologuée</span>
+                  </div>
+                  <div class="ex-garage-item">
+                    <span class="ico">🚗</span>
+                    <span class="txt">Contrôle technique — préparation &amp; accompagnement</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ex-badge">✓ Livré en 36 h — Mécanique automobile</div>
+            </div>
+
+            <!-- Example 3: Restaurant -->
+            <div class="ex-browser" id="ex2">
+              <div class="ex-bar">
+                <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
+                <div class="ex-addr"></div>
+                <span style="font-size:7px;color:#7a7a96;margin-left:6px;white-space:nowrap;">terroir-gourmand.fr</span>
+              </div>
+              <div class="ex-body">
+                <div class="ex-resto-nav">
+                  <span class="ex-resto-logo">🍽 TERROIR GOURMAND</span>
+                  <div class="ex-resto-links">
+                    <span>Menu</span><span>Réservation</span><span>Traiteur</span>
+                  </div>
+                </div>
+                <div class="ex-resto-hero">
+                  <div class="ex-resto-h1">La cuisine de chez nous,<br>faite avec passion.</div>
+                  <div class="ex-resto-sub">Cuisine traditionnelle · Produits locaux · Formule midi<br>Ouvert du mardi au dimanche — Réservation conseillée</div>
+                  <div class="ex-resto-btn">Réserver une table →</div>
+                </div>
+                <div class="ex-resto-gallery">
+                  <div class="ex-resto-img" style="background:linear-gradient(135deg,#3a2a10,#1a1508);"></div>
+                  <div class="ex-resto-img" style="background:linear-gradient(135deg,#2a1a08,#3a2a10);"></div>
+                  <div class="ex-resto-img" style="background:linear-gradient(135deg,#1a1508,#2a2010);"></div>
+                </div>
+                <div style="padding:6px 8px 10px;text-align:center;">
+                  <span style="font-size:6px;color:#7a6030;letter-spacing:.08em;">GALERIE · PLATS DU JOUR · ÉVÉNEMENTS PRIVÉS</span>
+                </div>
+              </div>
+              <div class="ex-badge">✓ Livré en 44 h — Restauration</div>
+            </div>
+
+          </div><!-- /ex-browsers -->
+        </div><!-- /ex-col -->
+
+      </div><!-- /proc-wrap -->
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section id="why">
+    <div class="wrap">
+      <div style="text-align:center;max-width:580px;margin:0 auto 60px">
+        <div class="tag-line r0" style="justify-content:center">Pourquoi SILEX</div>
+        <h2 class="s-title r0 d1">Ce qui nous<br>rend différents.</h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-item r0">
+          <div class="why-ico">🎯</div>
+          <div>
+            <h4>Spécialistes TPE &amp; artisans</h4>
+            <p>On ne fait pas de grands groupes. Notre seul marché, c'est vous : coiffeurs, boulangers, artisans, restaurateurs, garages.</p>
+          </div>
+        </div>
+        <div class="why-item r0 d1">
+          <div class="why-ico">💶</div>
+          <div>
+            <h4>Prix juste &amp; transparent</h4>
+            <p>Pas d'abonnement caché. Un tarif fixe annoncé dès le départ, pensé pour les petites structures.</p>
+          </div>
+        </div>
+        <div class="why-item r0 d2">
+          <div class="why-ico">⚡</div>
+          <div>
+            <h4>Livraison en 48 heures</h4>
+            <p>Chaque journée sans site, c'est des clients perdus. On s'active. Votre site est en ligne avant la semaine prochaine.</p>
+          </div>
+        </div>
+        <div class="why-item r0 d3">
+          <div class="why-ico">🤝</div>
+          <div>
+            <h4>Un vrai interlocuteur</h4>
+            <p>Un contact direct, disponible, qui connaît votre dossier. Pas de hotline, pas de ticket, pas d'attente.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="faq-head">
+        <div class="tag-line r0" style="justify-content:center">Questions fréquentes</div>
+        <h2 class="s-title r0 d1">Tout ce que vous<br>voulez savoir.</h2>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item r0">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Combien coûte un site vitrine SILEX ?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">
+            Nos tarifs démarrent à <strong>490 €</strong> pour un site vitrine complet : design sur-mesure, nom de domaine inclus la première année, hébergement HTTPS, formulaire de contact et optimisation mobile. Un devis précis et sans engagement vous est remis après un premier échange de quelques minutes. Aucune mauvaise surprise à la facture.
+          </div></div>
+        </div>
+
+        <div class="faq-item r0 d1">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>En combien de temps mon site sera-t-il en ligne ?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">
+            Notre engagement : <strong>48 heures ouvrées</strong> entre la validation du devis et la mise en ligne. Dans la plupart des cas, nous livrons avant ce délai. Vous disposez ensuite d'une période de révision pour demander tous les ajustements que vous souhaitez — sans limite.
+          </div></div>
+        </div>
+
+        <div class="faq-item r0 d2">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Dois-je fournir des textes et des photos ?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">
+            Non, nous nous occupons de tout. Si vous avez des photos ou des textes, c'est parfait — nous les utilisons. Sinon, nous rédigeons les contenus pour vous (présentation, services, contact) et sélectionnons des visuels professionnels libres de droits adaptés à votre activité. Vous n'avez qu'à valider le résultat.
+          </div></div>
+        </div>
+
+        <div class="faq-item r0 d3">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Mon site sera-t-il visible sur Google ?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">
+            Oui. Chaque site est livré avec une <strong>optimisation SEO local</strong> de base : balises titre et description, structure des pages, vitesse de chargement, et configuration de votre fiche <strong>Google Business</strong>. Cela suffit dans la plupart des cas pour apparaître dans les recherches locales et sur Google Maps. Pour des résultats plus avancés, nous proposons un accompagnement SEO mensuel.
+          </div></div>
+        </div>
+
+        <div class="faq-item r0">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Puis-je modifier mon site moi-même après la livraison ?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">
+            Oui, sur demande. Nous pouvons livrer un site avec un accès simplifié pour modifier vos textes, horaires ou photos. Si vous préférez déléguer complètement, nous gérons toutes les mises à jour pour vous — un simple SMS ou WhatsApp suffit. Réponse garantie sous 24 h.
+          </div></div>
+        </div>
+
+        <div class="faq-item r0 d1">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Que se passe-t-il si le résultat ne me satisfait pas ?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">
+            Nous ne mettons jamais un site en ligne sans votre validation explicite. Avant toute publication, vous voyez le rendu final et pouvez demander autant de modifications que nécessaire. Si malgré tout vous n'êtes pas satisfait, nous vous remboursons intégralement — c'est notre <strong>garantie satisfaction</strong>.
+          </div></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TERRITORY -->
+  <section id="territory">
+    <div class="wrap">
+      <div class="terr-inner">
+        <div>
+          <div class="tag-line r0">Zone d'intervention</div>
+          <h2 class="s-title r0 d1">On se déplace.<br>On est proches.</h2>
+          <p class="s-sub r0 d2">
+            On accompagne les commerçants et artisans de votre territoire. Rencontrer nos clients en face-à-face, c'est notre façon de travailler.
+          </p>
+          <div class="pills r0 d3">
+            <span class="pill main">Riom</span>
+            <span class="pill">Mozac</span>
+            <span class="pill">Châtel-Guyon</span>
+            <span class="pill">Volvic</span>
+            <span class="pill">Aigueperse</span>
+            <span class="pill">Combronde</span>
+            <span class="pill">Maringues</span>
+            <span class="pill">Lezoux</span>
+            <span class="pill">Ennezat</span>
+            <span class="pill">Marsat</span>
+            <span class="pill">Artonne</span>
+            <span class="pill">Chappes</span>
+            <span class="pill">+ environs</span>
+          </div>
+        </div>
+        <div class="terr-visual r0 d2">
+          <div class="terr-glow"></div>
+          <div class="rings">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="center-dot">
+              <svg viewBox="0 0 36 40" width="16" height="18" fill="none">
+                <polygon points="18,1 35,12 35,28 18,39 1,28 1,12" fill="none" stroke="#000" stroke-width="1.5"/>
+                <polygon points="18,1 35,12 18,16" fill="#000" opacity="0.8"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="cta-wrap">
+      <div class="cta-label r0">Offre de lancement disponible</div>
+      <h2 class="cta-h2 r0 d1">
+        Votre site vitrine,<br><em>livré en 48h.</em>
+      </h2>
+      <p class="cta-p r0 d2">
+        Laissez votre numéro. On vous rappelle dans la journée pour un premier échange sans engagement, sans jargon.
+      </p>
+      <form class="cta-form r0 d3" id="ctaForm" onsubmit="handleForm(event)">
+        <input class="cta-input" type="tel" id="telInput" placeholder="Votre numéro de téléphone" autocomplete="tel" />
+        <button class="btn btn-gold" type="submit">Être rappelé →</button>
+      </form>
+      <p class="cta-fine r0 d4">Aucun engagement · Rappel sous 24 h · Devis gratuit</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a class="logo" href="#">
+            <svg class="logo-mark" viewBox="0 0 36 40" fill="none">
+              <polygon points="18,1 35,12 35,28 18,39 1,28 1,12" fill="none" stroke="#c8a45a" stroke-width="1.5"/>
+              <polygon points="18,1 35,12 18,16" fill="#c8a45a" opacity="0.9"/>
+              <polygon points="18,16 35,12 35,28" fill="#c8a45a" opacity="0.25"/>
+              <circle cx="18" cy="16" r="2.2" fill="#e8c97a"/>
+            </svg>
+            <span class="logo-word">SILEX</span>
+          </a>
+          <p>Agence web spécialisée dans la création de sites vitrines pour les artisans et TPE/PME.</p>
+        </div>
+        <div class="foot-cols">
+          <div class="foot-col">
+            <h5>Services</h5>
+            <ul>
+              <li><a href="#services">Site vitrine</a></li>
+              <li><a href="#services">SEO local</a></li>
+              <li><a href="#services">Hébergement</a></li>
+              <li><a href="#services">Maintenance</a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h5>Agence</h5>
+            <ul>
+              <li><a href="#process">Notre méthode</a></li>
+              <li><a href="#faq">FAQ</a></li>
+              <li><a href="#why">Pourquoi SILEX</a></li>
+              <li><a href="#cta">Devis gratuit</a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h5>Légal</h5>
+            <ul>
+              <li><a onclick="openCGV()">Conditions de vente</a></li>
+              <li><a onclick="openCGV()">Mentions légales</a></li>
+              <li><a onclick="openCGV()">Politique de confidentialité</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot-bot">
+        <p>© 2025 SILEX — Tous droits réservés</p>
+        <p style="color:var(--gold);font-size:.7rem;letter-spacing:.08em;font-family:'Syne',sans-serif;font-weight:700;">L'ÉTINCELLE QUI VOUS MET EN LIGNE</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CGV MODAL -->
+  <div class="cgv-backdrop" id="cgvBackdrop" onclick="closeCGVOutside(event)">
+    <div class="cgv-modal">
+      <div class="cgv-header">
+        <h3>Conditions Générales de Vente</h3>
+        <button class="cgv-close" onclick="closeCGV()">✕</button>
+      </div>
+      <div class="cgv-body">
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:20px;">En vigueur au 1er janvier 2025 · SILEX Agence Web</p>
+
+        <h4>Article 1 — Objet et champ d'application</h4>
+        <p>Les présentes Conditions Générales de Vente (CGV) régissent les relations contractuelles entre <strong>SILEX Agence Web</strong> (ci-après « le Prestataire ») et tout client professionnel ou particulier (ci-après « le Client ») souhaitant bénéficier de ses services de création de sites web. Toute commande implique l'acceptation pleine et entière des présentes CGV.</p>
+
+        <h4>Article 2 — Services proposés</h4>
+        <p>Le Prestataire propose des services de création de sites vitrines professionnels, incluant : conception graphique, intégration web, optimisation mobile, référencement local (SEO), hébergement et enregistrement de nom de domaine. Les prestations détaillées figurent dans le devis remis au Client avant toute commande.</p>
+
+        <h4>Article 3 — Tarifs et modalités de paiement</h4>
+        <p>Les tarifs sont exprimés en euros TTC. Un acompte de <strong>50 % du montant total</strong> est exigible à la commande. Le solde est dû à la livraison du site, avant mise en ligne définitive. En cas de retard de paiement, des pénalités de 3 fois le taux d'intérêt légal seront appliquées de plein droit, ainsi qu'une indemnité forfaitaire de 40 € pour frais de recouvrement.</p>
+
+        <h4>Article 4 — Délais de livraison</h4>
+        <p>Le Prestataire s'engage à livrer le site dans un délai de <strong>48 heures ouvrées</strong> à compter de la validation du devis et du versement de l'acompte, sous réserve que le Client fournisse les informations nécessaires dans les délais convenus. Tout retard imputable au Client ne saurait engager la responsabilité du Prestataire.</p>
+
+        <h4>Article 5 — Révisions et modifications</h4>
+        <p>Le Client bénéficie d'un nombre illimité de révisions pendant la phase de développement, jusqu'à la mise en ligne. Après mise en ligne, toute modification substantielle fera l'objet d'un devis complémentaire. Les corrections mineures (textes, horaires, photos) sont incluses pendant une période de <strong>30 jours</strong> suivant la livraison.</p>
+
+        <h4>Article 6 — Propriété intellectuelle</h4>
+        <p>À complet règlement du prix, le Client devient propriétaire des éléments graphiques et textuels spécifiquement créés pour son site. Le Prestataire conserve le droit de mentionner la réalisation dans son portfolio et ses supports commerciaux. Les droits des logiciels, frameworks et bibliothèques tiers restent la propriété de leurs auteurs respectifs.</p>
+
+        <h4>Article 7 — Garantie de satisfaction</h4>
+        <p>Le site n'est mis en ligne qu'après validation explicite du Client. Si le Client n'est pas satisfait du rendu final après le processus de révision, le Prestataire remboursera l'intégralité des sommes versées, déduction faite des frais engagés (nom de domaine, hébergement). Cette garantie est valable uniquement lors de la première livraison.</p>
+
+        <h4>Article 8 — Responsabilité</h4>
+        <p>Le Prestataire ne saurait être tenu responsable des contenus fournis par le Client (textes, images, logos) ni de leur conformité légale. Il appartient au Client de s'assurer qu'il dispose des droits nécessaires sur les éléments transmis. La responsabilité du Prestataire est limitée au montant facturé pour la prestation concernée.</p>
+
+        <h4>Article 9 — Résiliation</h4>
+        <p>En cas d'annulation par le Client après versement de l'acompte mais avant livraison, l'acompte reste acquis au Prestataire à titre d'indemnisation. En cas d'annulation après livraison du bon à tirer, la totalité du prix est due.</p>
+
+        <h4>Article 10 — Droit applicable et litiges</h4>
+        <p>Les présentes CGV sont soumises au droit français. En cas de litige, les parties s'engagent à rechercher une solution amiable avant tout recours judiciaire. À défaut d'accord, le tribunal compétent du lieu du siège du Prestataire sera seul compétent.</p>
+
+        <p style="margin-top:24px;font-size:.78rem;">Pour toute question : <strong style="color:var(--gold);">contact@silex.fr</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="admin-backdrop" id="adminBackdrop" onclick="closeAdminOutside(event)">
+    <div class="admin-modal">
+      <div class="admin-header">
+        <h3>⬡ SILEX — LEADS COLLECTÉS</h3>
+        <button class="cgv-close" onclick="closeAdmin()">✕</button>
+      </div>
+      <div class="admin-body" id="adminBody">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ── CONFIG ────────────────────────────────────────────────────
+  // Remplacez par votre adresse email pour recevoir les leads
+  const SILEX_EMAIL = 'contact@silex.fr';
+
+  // ── CURSOR ────────────────────────────────────────────────────
+  const blob = document.getElementById('blob');
+  document.addEventListener('mousemove', e => {
+    blob.style.left = e.clientX + 'px';
+    blob.style.top  = e.clientY + 'px';
+  });
+
+  // ── NAV ───────────────────────────────────────────────────────
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive:true });
+
+  // ── MOBILE MENU ───────────────────────────────────────────────
+  const mobMenu = document.getElementById('mobMenu');
+  document.getElementById('burger').addEventListener('click', () => mobMenu.classList.add('open'));
+  document.getElementById('mobClose').addEventListener('click', () => mobMenu.classList.remove('open'));
+  document.querySelectorAll('.mml').forEach(a =>
+    a.addEventListener('click', () => mobMenu.classList.remove('open'))
+  );
+
+  // ── STARS CANVAS ─────────────────────────────────────────────
+  (function(){
+    const c = document.getElementById('bg-canvas');
+    const ctx = c.getContext('2d');
+    let stars = [];
+    function resize(){ c.width = window.innerWidth; c.height = window.innerHeight; }
+    function init(){
+      stars = Array.from({length:140}, () => ({
+        x: Math.random() * c.width, y: Math.random() * c.height,
+        r: Math.random() * 1.1 + .15, a: Math.random(),
+        da: (Math.random()-.5)*.004,
+        vx: (Math.random()-.5)*.12, vy: (Math.random()-.5)*.12,
+      }));
+    }
+    function draw(){
+      ctx.clearRect(0,0,c.width,c.height);
+      stars.forEach(s => {
+        s.a += s.da;
+        if (s.a<=0||s.a>=1) s.da *= -1;
+        s.x = (s.x + s.vx + c.width)  % c.width;
+        s.y = (s.y + s.vy + c.height) % c.height;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle = `rgba(255,255,255,${s.a*.55})`; ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    resize(); init(); draw();
+    window.addEventListener('resize', () => { resize(); init(); });
+  })();
+
+  // ── SCROLL REVEAL ─────────────────────────────────────────────
+  const rev = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('on'); rev.unobserve(e.target); } });
+  }, { threshold:.1 });
+  document.querySelectorAll('.r0').forEach(el => rev.observe(el));
+
+  // ── COUNTERS ──────────────────────────────────────────────────
+  function counter(el, to, suf){
+    const dur = 1600, start = performance.now();
+    (function tick(now){
+      const t = Math.min((now-start)/dur,1);
+      const v = 1 - Math.pow(1-t,3);
+      el.textContent = Math.round(v*to)+suf;
+      if (t<1) requestAnimationFrame(tick);
+    })(start);
+  }
+  const numObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, to = parseInt(el.dataset.to), suf = el.dataset.suf||'', sta = el.dataset.static;
+      if (sta) el.textContent = sta; else counter(el,to,suf);
+      numObs.unobserve(el);
+    });
+  }, { threshold:.5 });
+  document.querySelectorAll('.num-val').forEach(el => numObs.observe(el));
+
+  // ── EXAMPLE TABS ──────────────────────────────────────────────
+  function setEx(idx){
+    document.querySelectorAll('.ex-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+    document.querySelectorAll('.ex-browser').forEach((b,i) => b.classList.toggle('active', i===idx));
+  }
+
+  // ── FAQ ACCORDION ─────────────────────────────────────────────
+  function toggleFaq(btn){
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // ── CTA FORM — leads collectés ────────────────────────────────
+  function handleForm(e){
+    e.preventDefault();
+    const inp = document.getElementById('telInput');
+    const phone = inp.value.trim();
+    if (!phone){ inp.focus(); return; }
+
+    // 1. Sauvegarde locale (accessible via panneau admin)
+    const leads = JSON.parse(localStorage.getItem('silex_leads') || '[]');
+    leads.push({ phone, date: new Date().toLocaleString('fr-FR') });
+    localStorage.setItem('silex_leads', JSON.stringify(leads));
+
+    // 2. Ouverture du client mail (optionnel — modifiez SILEX_EMAIL ci-dessus)
+    try {
+      const mailBody = `Nouvelle demande de rappel SILEX%0D%0A%0D%0ANuméro : ${encodeURIComponent(phone)}%0D%0ADate : ${encodeURIComponent(new Date().toLocaleString('fr-FR'))}`;
+      window.location.href = `mailto:${SILEX_EMAIL}?subject=Rappel SILEX — ${encodeURIComponent(phone)}&body=${mailBody}`;
+    } catch(err){}
+
+    // 3. Feedback visuel
+    const btn = e.target.querySelector('button');
+    btn.textContent = '✓ Reçu !'; btn.style.background = '#28c840'; btn.style.color = '#fff';
+    inp.value = ''; inp.placeholder = 'On vous rappelle très bientôt !';
+    setTimeout(() => {
+      btn.textContent = 'Être rappelé →'; btn.style.background = ''; btn.style.color = '';
+      inp.placeholder = 'Votre numéro de téléphone';
+    }, 4000);
+  }
+
+  // ── ACTIVE NAV LINK ───────────────────────────────────────────
+  const secEls = document.querySelectorAll('section[id]');
+  const navAs  = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    secEls.forEach(s => { if (window.scrollY >= s.offsetTop - 140) cur = s.id; });
+    navAs.forEach(a => { a.style.color = a.getAttribute('href')==='#'+cur ? 'var(--gold)' : ''; });
+  }, { passive:true });
+
+  // ── CGV MODAL ─────────────────────────────────────────────────
+  function openCGV(){ document.getElementById('cgvBackdrop').classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeCGV(){ document.getElementById('cgvBackdrop').classList.remove('open'); document.body.style.overflow=''; }
+  function closeCGVOutside(e){ if (e.target===document.getElementById('cgvBackdrop')) closeCGV(); }
+
+  // ── ADMIN PANEL (tapez "ADMIN" au clavier) ────────────────────
+  let adminSeq = '';
+  document.addEventListener('keydown', e => {
+    adminSeq = (adminSeq + e.key).slice(-5).toUpperCase();
+    if (adminSeq === 'ADMIN') openAdmin();
+  });
+  function openAdmin(){
+    const leads = JSON.parse(localStorage.getItem('silex_leads') || '[]');
+    const body = document.getElementById('adminBody');
+    if (leads.length === 0){
+      body.innerHTML = '<div class="admin-empty">Aucun lead collecté pour l\'instant.<br><small style="font-size:.72rem;margin-top:8px;display:block;">Les numéros soumis via le formulaire apparaîtront ici.</small></div>';
+    } else {
+      body.innerHTML = leads.slice().reverse().map(l =>
+        `<div class="admin-lead">
+          <span class="admin-lead-phone">${l.phone}</span>
+          <span class="admin-lead-date">${l.date}</span>
+        </div>`
+      ).join('') + `<button class="admin-clear" onclick="clearLeads()">🗑 Effacer tous les leads</button>`;
+    }
+    document.getElementById('adminBackdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeAdmin(){ document.getElementById('adminBackdrop').classList.remove('open'); document.body.style.overflow=''; }
+  function closeAdminOutside(e){ if (e.target===document.getElementById('adminBackdrop')) closeAdmin(); }
+  function clearLeads(){
+    if (confirm('Effacer tous les leads ? Cette action est irréversible.')) {
+      localStorage.removeItem('silex_leads');
+      closeAdmin();
+    }
+  }
+  </script>
+</body>
+</html>
