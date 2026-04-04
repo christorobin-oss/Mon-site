@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js"></script>
   <style>
     /* ── RESET ─────────────────────────────────────────────────── */
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -238,11 +239,12 @@
     .svc-card:hover { background:var(--bg3); }
     .svc-card:hover::after { opacity:1; }
     .svc-ico {
-      width:46px; height:46px; border-radius:12px;
+      width:48px; height:48px; border-radius:13px;
       background:var(--gold-dim); border:1px solid var(--border-g);
       display:flex; align-items:center; justify-content:center;
-      font-size:1.25rem; margin-bottom:26px;
+      margin-bottom:26px;
     }
+    .svc-ico svg { width:22px; height:22px; stroke:var(--gold); stroke-width:1.5; fill:none; stroke-linecap:round; stroke-linejoin:round; }
     .svc-card h3 {
       font-family:'Cormorant Garamond', serif;
       font-size:1.3rem; font-weight:700; margin-bottom:12px;
@@ -257,31 +259,40 @@
 
     /* ── PROCESS ───────────────────────────────────────────────── */
     #process { padding:130px 0; background:var(--bg2); }
+    .proc-head { margin-bottom:52px; }
+    /* Carousel en haut, steps en bas — flex colonne + order */
     .proc-wrap {
-      display:grid; grid-template-columns:1fr 1fr;
-      gap:80px; align-items:start;
+      display:flex; flex-direction:column; gap:44px;
     }
-    .steps { display:flex; flex-direction:column; margin-top:50px; }
+    .proc-wrap > div:first-child { order:2; }  /* steps → bas */
+    .ex-col { order:1; }                        /* carousel → haut */
+
+    /* Steps en grille horizontale 4 colonnes */
+    .steps {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      gap:1px; background:var(--border);
+      border:1px solid var(--border); border-radius:var(--r); overflow:hidden;
+    }
     .step {
-      display:flex; gap:26px; padding:30px 0;
-      border-bottom:1px solid var(--border);
-      transition:padding-left .3s var(--ease-s); cursor:default;
+      display:flex; flex-direction:column;
+      padding:32px 30px; background:var(--bg2);
+      border:none; cursor:default;
+      transition:background .3s;
     }
-    .step:first-child { padding-top:0; }
-    .step:last-child { border-bottom:none; padding-bottom:0; }
-    .step:hover { padding-left:10px; }
+    .step:hover { background:var(--bg3); }
     .step-n {
       font-family:'Cormorant Garamond', serif;
-      font-size:1.1rem; font-weight:600; letter-spacing:.04em;
-      color:var(--gold); opacity:.25; min-width:28px; padding-top:2px;
+      font-size:2rem; font-weight:700; letter-spacing:.02em;
+      color:var(--gold); opacity:.2; line-height:1;
+      margin-bottom:18px;
       transition:opacity .3s;
     }
-    .step:hover .step-n { opacity:1; }
+    .step:hover .step-n { opacity:.7; }
     .step h4 {
       font-family:'Cormorant Garamond', serif;
-      font-size:1.2rem; font-weight:700; margin-bottom:8px;
+      font-size:1.1rem; font-weight:700; margin-bottom:10px;
     }
-    .step p { font-size:.84rem; color:var(--muted); line-height:1.7; font-weight:300; }
+    .step p { font-size:.82rem; color:var(--muted); line-height:1.7; font-weight:300; }
 
     /* ── EXAMPLE SITES ─────────────────────────────────────────── */
     .ex-col { position:relative; }
@@ -291,128 +302,94 @@
       margin-bottom:16px; display:flex; align-items:center; gap:8px;
     }
     .ex-col-label::before { content:''; width:16px; height:1px; background:var(--gold); }
-    .ex-tabs {
-      display:flex; gap:6px; margin-bottom:18px;
+    /* ── CAROUSEL ──────────────────────────────────────────────── */
+    .ex-carousel-wrapper {
+      position:relative; border-radius:16px; overflow:hidden;
+      border:1px solid rgba(255,255,255,.09);
+      box-shadow:0 28px 70px rgba(0,0,0,.55);
+      max-width:680px; margin:0 auto;
     }
-    .ex-tab {
-      padding:6px 16px; border-radius:50px; cursor:pointer;
-      font-family:'DM Sans', sans-serif;
-      font-size:.72rem; font-weight:600; letter-spacing:.04em;
-      border:1px solid var(--border); background:transparent;
-      color:var(--muted); transition:all .25s;
+    .ex-carousel-track {
+      display:flex; height:480px;
+      transition:transform .6s cubic-bezier(.25,.46,.45,.94);
+      will-change:transform;
     }
-    .ex-tab.active {
-      border-color:var(--border-g); background:var(--gold-dim);
-      color:var(--gold);
-    }
-    .ex-tab:hover:not(.active) { border-color:var(--border-g); color:var(--text); }
-    .ex-browsers { position:relative; }
     .ex-browser {
-      display:none;
-      background:rgba(20,20,36,.95);
-      border:1px solid rgba(255,255,255,.1);
-      border-radius:16px; overflow:hidden;
-      box-shadow:0 24px 60px rgba(0,0,0,.5);
-      animation:fadeIn .3s var(--ease-s);
+      min-width:100%; flex-shrink:0;
+      background:rgba(16,16,28,.97);
+      display:flex; flex-direction:column; overflow:hidden;
     }
-    .ex-browser.active { display:block; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .ex-nav-btn {
+      position:absolute; top:50%; transform:translateY(-50%);
+      width:30px; height:30px; border-radius:50%; z-index:10;
+      background:rgba(8,8,16,.7); border:1px solid var(--border-g);
+      cursor:pointer; color:var(--gold);
+      display:flex; align-items:center; justify-content:center;
+      transition:background .2s, transform .2s;
+      backdrop-filter:blur(8px);
+    }
+    .ex-nav-btn:hover { background:rgba(200,164,90,.2); transform:translateY(-50%) scale(1.1); }
+    .ex-nav-btn svg { width:14px; height:14px; stroke:var(--gold); stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+    .ex-prev { left:10px; }
+    .ex-next { right:10px; }
+    .ex-dots {
+      display:flex; justify-content:center; align-items:center; gap:6px;
+      padding:9px 0 11px;
+      background:rgba(16,16,28,.97);
+      border-top:1px solid rgba(200,164,90,.08);
+    }
+    .ex-dot {
+      width:5px; height:5px; border-radius:50%;
+      background:var(--muted); cursor:pointer;
+      transition:background .3s, transform .3s, width .3s;
+    }
+    .ex-dot.active { background:var(--gold); transform:scale(1.3); width:14px; border-radius:3px; }
     .ex-bar {
-      height:26px; background:rgba(255,255,255,.04);
-      border-bottom:1px solid rgba(255,255,255,.06);
-      display:flex; align-items:center; gap:6px; padding:0 12px;
+      height:32px; background:rgba(255,255,255,.04);
+      border-bottom:1px solid rgba(255,255,255,.05);
+      display:flex; align-items:center; gap:6px; padding:0 14px; flex-shrink:0;
     }
     .ex-addr {
-      flex:1; height:12px; background:rgba(255,255,255,.06);
-      border-radius:4px; margin-left:8px;
-      font-size:0; /* text hidden, visual only */
+      flex:1; height:13px; background:rgba(255,255,255,.05);
+      border-radius:4px; margin-left:10px;
     }
-    .d { width:7px; height:7px; border-radius:50%; }
+    .d { width:9px; height:9px; border-radius:50%; }
     .dr { background:#ff5f57; } .dy { background:#febc2e; } .dg { background:#28c840; }
-    .ex-body { padding:0; }
+    .ex-body { padding:0; flex:1; overflow:hidden; }
     .ex-badge {
       text-align:center; padding:8px;
-      font-size:.64rem; color:var(--gold);
+      font-size:.62rem; color:var(--gold);
       font-weight:700; letter-spacing:.1em; text-transform:uppercase;
-      border-top:1px solid rgba(200,164,90,.12);
-      background:rgba(200,164,90,.04);
+      border-top:1px solid rgba(200,164,90,.1);
+      background:rgba(200,164,90,.03);
     }
-
-    /* Example site — Salon */
-    .ex-salon-nav {
+    /* Shared mini-site helpers */
+    .msite-nav {
       display:flex; align-items:center; justify-content:space-between;
-      padding:8px 14px; background:#160a12;
-      border-bottom:1px solid rgba(200,80,120,.15);
+      padding:10px 18px; flex-shrink:0;
     }
-    .ex-salon-logo { color:#e8b0c8; font-size:8px; font-weight:700; letter-spacing:.08em; }
-    .ex-salon-links { display:flex; gap:10px; }
-    .ex-salon-links span { color:#9a5070; font-size:6.5px; }
-    .ex-salon-hero {
-      background:linear-gradient(135deg, #240d1a 0%, #160a12 100%);
-      padding:18px 14px 14px;
-    }
-    .ex-salon-h1 { color:#f0c0d8; font-size:10.5px; font-weight:700; line-height:1.3; margin-bottom:6px; }
-    .ex-salon-sub { color:#9a5070; font-size:7px; line-height:1.5; margin-bottom:10px; }
-    .ex-salon-btn {
-      background:#b06080; color:#fff; font-size:6px; font-weight:700;
-      padding:4px 10px; border-radius:20px; display:inline-block;
-    }
-    .ex-cards-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; padding:8px; }
-    .ex-card-mini {
-      border-radius:6px; padding:8px 6px; text-align:center;
-    }
-    .ex-card-mini .ico { font-size:14px; display:block; margin-bottom:3px; }
-    .ex-card-mini .lbl { font-size:6px; font-weight:600; display:block; margin-bottom:2px; }
-    .ex-card-mini .prc { font-size:5.5px; display:block; }
-
-    /* Example site — Garage */
-    .ex-garage-nav {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:8px 14px; background:#0d1219;
-      border-bottom:1px solid rgba(50,120,200,.15);
-    }
-    .ex-garage-logo { color:#7ab0e8; font-size:8px; font-weight:700; letter-spacing:.08em; }
-    .ex-garage-links { display:flex; gap:10px; }
-    .ex-garage-links span { color:#4a6880; font-size:6.5px; }
-    .ex-garage-hero {
-      background:linear-gradient(135deg, #0e1822 0%, #0d1219 100%);
-      padding:18px 14px 14px;
-    }
-    .ex-garage-h1 { color:#c0d8f8; font-size:10.5px; font-weight:700; line-height:1.3; margin-bottom:6px; }
-    .ex-garage-sub { color:#4a6880; font-size:7px; line-height:1.5; margin-bottom:10px; }
-    .ex-garage-btn {
-      background:#3a78c8; color:#fff; font-size:6px; font-weight:700;
-      padding:4px 10px; border-radius:20px; display:inline-block;
-    }
-    .ex-garage-list { padding:8px 14px 10px; display:flex; flex-direction:column; gap:4px; }
-    .ex-garage-item {
-      display:flex; align-items:center; gap:6px;
-      background:#111e2e; border-radius:5px; padding:5px 8px;
-    }
-    .ex-garage-item .ico { font-size:9px; }
-    .ex-garage-item .txt { font-size:6.5px; color:#7ab0e8; font-weight:600; }
-
-    /* Example site — Restaurant */
-    .ex-resto-nav {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:8px 14px; background:#0f0c08;
-      border-bottom:1px solid rgba(200,160,60,.15);
-    }
-    .ex-resto-logo { color:#e8c878; font-size:8px; font-weight:700; letter-spacing:.08em; }
-    .ex-resto-links { display:flex; gap:10px; }
-    .ex-resto-links span { color:#7a6030; font-size:6.5px; }
-    .ex-resto-hero {
-      background:linear-gradient(135deg, #1a1508 0%, #0f0c08 100%);
-      padding:18px 14px 14px;
-    }
-    .ex-resto-h1 { color:#f0d890; font-size:10.5px; font-weight:700; line-height:1.3; margin-bottom:6px; }
-    .ex-resto-sub { color:#7a6030; font-size:7px; line-height:1.5; margin-bottom:10px; }
-    .ex-resto-btn {
-      background:#c8a040; color:#000; font-size:6px; font-weight:700;
-      padding:4px 10px; border-radius:20px; display:inline-block;
-    }
-    .ex-resto-gallery { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; padding:8px; }
-    .ex-resto-img { height:36px; border-radius:5px; }
+    .msite-logo { font-size:9px; font-weight:700; letter-spacing:.1em; }
+    .msite-links { display:flex; gap:11px; }
+    .msite-links span { font-size:7.5px; }
+    .msite-hero { padding:22px 18px 17px; }
+    .msite-h1 { font-size:13px; font-weight:700; line-height:1.3; margin-bottom:7px; }
+    .msite-sub { font-size:8px; line-height:1.6; margin-bottom:12px; }
+    .msite-btn { font-size:7.5px; font-weight:700; padding:5px 13px; border-radius:20px; display:inline-block; }
+    .msite-list { padding:10px 18px 14px; display:flex; flex-direction:column; gap:6px; }
+    .msite-row { display:flex; align-items:center; gap:8px; border-radius:5px; padding:7px 10px; }
+    .msite-row span:first-child { font-size:8.5px; font-weight:700; }
+    .msite-row span:last-child { font-size:8px; font-weight:600; }
+    .msite-grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; padding:10px 10px 14px; }
+    .msite-card { border-radius:6px; padding:10px 6px; text-align:center; }
+    .msite-card-ico { font-size:10px; font-weight:700; display:block; margin-bottom:4px; }
+    .msite-card-lbl { font-size:7.5px; font-weight:700; display:block; margin-bottom:2px; }
+    .msite-card-sub { font-size:6.5px; display:block; }
+    .msite-hours { display:flex; align-items:center; justify-content:space-between; padding:7px 18px 14px; }
+    .msite-hours-item { text-align:center; }
+    .msite-hours-day { font-size:7px; display:block; margin-bottom:3px; }
+    .msite-hours-time { font-size:8px; font-weight:700; display:block; }
+    .msite-gallery { display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; padding:10px 10px 14px; }
+    .msite-img { height:44px; border-radius:5px; }
 
     /* ── WHY ───────────────────────────────────────────────────── */
     #why { padding:130px 0; }
@@ -426,7 +403,12 @@
       display:flex; gap:22px; transition:background .3s;
     }
     .why-item:hover { background:var(--bg3); }
-    .why-ico { font-size:1.5rem; min-width:40px; margin-top:2px; }
+    .why-ico {
+      min-width:44px; width:44px; height:44px; margin-top:2px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:11px; background:var(--gold-dim); border:1px solid var(--border-g);
+    }
+    .why-ico svg { width:20px; height:20px; stroke:var(--gold); stroke-width:1.5; fill:none; stroke-linecap:round; stroke-linejoin:round; }
     .why-item h4 {
       font-family:'Cormorant Garamond', serif;
       font-size:1.2rem; font-weight:700; margin-bottom:10px;
@@ -643,6 +625,132 @@
     }
     .admin-clear:hover { background:rgba(255,80,80,.1); color:#ff5050; }
 
+    /* ── TARIFS ────────────────────────────────────────────────── */
+    #tarifs { padding:130px 0; }
+    .tarifs-head { text-align:center; max-width:580px; margin:0 auto 70px; }
+    .tarifs-grid {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:1px; background:var(--border);
+      border:1px solid var(--border); border-radius:var(--r); overflow:hidden;
+      margin-bottom:2px;
+    }
+    .tarif-card {
+      background:var(--bg2); padding:44px 36px;
+      position:relative; display:flex; flex-direction:column;
+      transition:background .3s;
+    }
+    .tarif-card:hover { background:var(--bg3); }
+    .tarif-card.featured {
+      background:var(--bg3);
+      border-top:2px solid var(--gold);
+    }
+    .tarif-badge {
+      position:absolute; top:-1px; left:50%; transform:translateX(-50%);
+      background:var(--gold); color:#000;
+      font-size:.6rem; font-weight:800; letter-spacing:.1em;
+      padding:3px 12px; border-radius:0 0 8px 8px;
+      white-space:nowrap; text-transform:uppercase;
+    }
+    .tarif-name {
+      font-family:'DM Sans', sans-serif;
+      font-size:.68rem; font-weight:700; letter-spacing:.14em;
+      text-transform:uppercase; color:var(--muted); margin-bottom:16px;
+    }
+    .tarif-price {
+      font-family:'Cormorant Garamond', serif;
+      font-size:clamp(2.4rem,4vw,3.2rem);
+      font-weight:700; color:var(--text); line-height:1;
+      margin-bottom:4px;
+    }
+    .tarif-price sup { font-size:.45em; vertical-align:top; margin-top:.3em; color:var(--gold); }
+    .tarif-price-note { font-size:.75rem; color:var(--muted); margin-bottom:28px; }
+    .tarif-divider { height:1px; background:var(--border); margin-bottom:24px; }
+    .tarif-features { list-style:none; display:flex; flex-direction:column; gap:11px; flex:1; }
+    .tarif-features li {
+      display:flex; align-items:flex-start; gap:10px;
+      font-size:.83rem; color:var(--muted); line-height:1.5; font-weight:300;
+    }
+    .tarif-features li .chk {
+      flex-shrink:0; width:16px; height:16px; border-radius:50%;
+      background:var(--gold-dim); border:1px solid var(--border-g);
+      display:flex; align-items:center; justify-content:center;
+      margin-top:1px;
+    }
+    .tarif-features li .chk svg { width:9px; height:9px; stroke:var(--gold); stroke-width:2.5; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+    .tarif-features li strong { color:var(--text); font-weight:500; }
+    .tarif-cta {
+      margin-top:32px; display:block; text-align:center;
+      padding:13px 24px; border-radius:50px;
+      font-family:'DM Sans', sans-serif;
+      font-size:.83rem; font-weight:700; text-decoration:none;
+      transition:transform .2s, box-shadow .25s;
+      cursor:pointer; border:none;
+    }
+    .tarif-cta-ghost {
+      border:1px solid var(--border-g); color:var(--gold); background:var(--gold-dim);
+    }
+    .tarif-cta-ghost:hover { background:var(--gold); color:#000; box-shadow:0 8px 30px var(--gold-glow); }
+    .tarif-cta-solid {
+      background:var(--gold); color:#000;
+    }
+    .tarif-cta-solid:hover { transform:translateY(-2px); box-shadow:0 10px 40px var(--gold-glow); }
+
+    /* Maintenance strip */
+    .tarif-maintenance {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:24px; flex-wrap:wrap;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:var(--r); padding:28px 36px; margin-bottom:70px;
+      transition:background .3s;
+    }
+    .tarif-maintenance:hover { background:var(--bg3); }
+    .tarif-maint-left h4 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.2rem; font-weight:700; margin-bottom:6px;
+    }
+    .tarif-maint-left p { font-size:.83rem; color:var(--muted); font-weight:300; line-height:1.6; }
+    .tarif-maint-right { text-align:right; flex-shrink:0; }
+    .tarif-maint-price {
+      font-family:'Cormorant Garamond', serif;
+      font-size:2rem; font-weight:700; color:var(--gold); line-height:1;
+    }
+    .tarif-maint-note { font-size:.72rem; color:var(--muted); margin-top:2px; }
+
+    /* Conditions tableau */
+    .tarif-conditions { margin-top:0; }
+    .conditions-head { text-align:center; max-width:480px; margin:0 auto 40px; }
+    .conditions-grid {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:1px; background:var(--border);
+      border:1px solid var(--border); border-radius:var(--r); overflow:hidden;
+    }
+    .cond-item {
+      background:var(--bg2); padding:30px 32px;
+      display:flex; gap:18px; align-items:flex-start;
+      transition:background .3s;
+    }
+    .cond-item:hover { background:var(--bg3); }
+    .cond-num {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.8rem; font-weight:700; color:var(--gold);
+      opacity:.2; min-width:28px; line-height:1;
+      transition:opacity .3s;
+    }
+    .cond-item:hover .cond-num { opacity:.7; }
+    .cond-item h5 {
+      font-family:'Cormorant Garamond', serif;
+      font-size:1.05rem; font-weight:700; margin-bottom:7px;
+    }
+    .cond-item p { font-size:.82rem; color:var(--muted); line-height:1.7; font-weight:300; }
+    .cond-item strong { color:var(--text); font-weight:500; }
+
+    @media (max-width:900px) {
+      .tarifs-grid { grid-template-columns:1fr; }
+      .conditions-grid { grid-template-columns:1fr; }
+      .tarif-maintenance { flex-direction:column; align-items:flex-start; }
+      .tarif-maint-right { text-align:left; }
+    }
+
     /* ── FOOTER ────────────────────────────────────────────────── */
     footer {
       position:relative; z-index:1;
@@ -718,7 +826,7 @@
       .hamburger { display:flex; }
       .num-row { grid-template-columns:repeat(2,1fr); }
       .svc-grid { grid-template-columns:1fr; }
-      .proc-wrap { grid-template-columns:1fr; }
+      .steps { grid-template-columns:repeat(2,1fr); }
       .why-grid { grid-template-columns:1fr; }
       .terr-inner { grid-template-columns:1fr; }
       .terr-visual { display:none; }
@@ -727,7 +835,8 @@
     @media (max-width:520px) {
       .hero-h1 { font-size:2.8rem; }
       .num-row { grid-template-columns:1fr 1fr; }
-      .proc-wrap { gap:50px; }
+      .steps { grid-template-columns:1fr; }
+      .proc-wrap { gap:32px; }
       .ex-tabs { flex-wrap:wrap; }
     }
   </style>
@@ -744,6 +853,7 @@
     <span class="mob-close" id="mobClose">✕</span>
     <a href="#services" class="mml">Services</a>
     <a href="#process" class="mml">Méthode</a>
+    <a href="#tarifs" class="mml">Tarifs</a>
     <a href="#faq" class="mml">FAQ</a>
     <a href="#cta" class="mml" style="color:var(--gold)">Démarrer →</a>
   </div>
@@ -762,8 +872,8 @@
     <ul class="nav-links">
       <li><a href="#services">Services</a></li>
       <li><a href="#process">Méthode</a></li>
+      <li><a href="#tarifs">Tarifs</a></li>
       <li><a href="#faq">FAQ</a></li>
-      <li><a href="#why">Pourquoi SILEX</a></li>
       <li><a class="nav-cta" href="#cta">Démarrer →</a></li>
     </ul>
     <div class="hamburger" id="burger">
@@ -831,37 +941,37 @@
       </div>
       <div class="svc-grid">
         <div class="svc-card r0">
-          <div class="svc-ico">🎨</div>
+          <div class="svc-ico"><i data-feather="pen-tool"></i></div>
           <h3>Design sur-mesure</h3>
           <p>Un site élégant, pensé pour votre secteur. Vos services, vos horaires, vos photos — tout ce que vos clients cherchent.</p>
           <span class="svc-pill">Inclus</span>
         </div>
         <div class="svc-card r0 d1">
-          <div class="svc-ico">📱</div>
+          <div class="svc-ico"><i data-feather="smartphone"></i></div>
           <h3>100 % mobile &amp; rapide</h3>
           <p>Votre site s'affiche parfaitement sur smartphone. Chargement instantané pour ne perdre aucun visiteur.</p>
           <span class="svc-pill">Responsive</span>
         </div>
         <div class="svc-card r0 d2">
-          <div class="svc-ico">📍</div>
+          <div class="svc-ico"><i data-feather="map-pin"></i></div>
           <h3>Référencement local</h3>
           <p>Votre fiche Google Business configurée, votre site optimisé pour apparaître quand vos clients vous cherchent.</p>
           <span class="svc-pill">SEO inclus</span>
         </div>
         <div class="svc-card r0">
-          <div class="svc-ico">✉️</div>
+          <div class="svc-ico"><i data-feather="mail"></i></div>
           <h3>Formulaire de contact</h3>
           <p>Vos clients vous écrivent directement depuis le site. Vous recevez les demandes sur votre email ou WhatsApp.</p>
           <span class="svc-pill">Sans abonnement</span>
         </div>
         <div class="svc-card r0 d1">
-          <div class="svc-ico">🔒</div>
+          <div class="svc-ico"><i data-feather="shield"></i></div>
           <h3>Hébergement &amp; domaine</h3>
           <p>Nom de domaine, hébergement sécurisé HTTPS, certificat SSL. Tout est géré. Aucune compétence technique requise.</p>
           <span class="svc-pill">Clé en main</span>
         </div>
         <div class="svc-card r0 d2">
-          <div class="svc-ico">🛠️</div>
+          <div class="svc-ico"><i data-feather="tool"></i></div>
           <h3>Support &amp; évolutions</h3>
           <p>Besoin de changer vos horaires ou ajouter une photo ? Un interlocuteur disponible, pas un ticket de support anonyme.</p>
           <span class="svc-pill">Humain</span>
@@ -873,12 +983,20 @@
   <!-- PROCESS -->
   <section id="process">
     <div class="wrap">
+
+      <!-- En-tête pleine largeur -->
+      <div class="proc-head" style="display:flex;align-items:flex-end;justify-content:space-between;gap:40px;flex-wrap:wrap;">
+        <div>
+          <div class="tag-line r0">Notre méthode</div>
+          <h2 class="s-title r0 d1">De zéro à en ligne<br>en 4 étapes.</h2>
+        </div>
+        <p class="s-sub r0 d2" style="margin-top:0;">Chaque projet suit le même protocole rigoureux — pour un résultat livré vite, bien, et sans stress de votre côté.</p>
+      </div>
+
       <div class="proc-wrap">
 
         <!-- LEFT: Steps -->
         <div>
-          <div class="tag-line r0">Notre méthode</div>
-          <h2 class="s-title r0 d1">De zéro à en ligne<br>en 4 étapes.</h2>
           <div class="steps">
             <div class="step r0">
               <span class="step-n">01</span>
@@ -911,125 +1029,243 @@
           </div>
         </div>
 
-        <!-- RIGHT: Example site previews -->
+        <!-- RIGHT: Example site carousel -->
         <div class="ex-col r0 d2">
-          <div class="ex-col-label">Exemples de réalisations</div>
-          <div class="ex-tabs">
-            <button class="ex-tab active" onclick="setEx(0)">Coiffure</button>
-            <button class="ex-tab" onclick="setEx(1)">Mécanique</button>
-            <button class="ex-tab" onclick="setEx(2)">Restauration</button>
-          </div>
-          <div class="ex-browsers">
+          <div class="ex-col-label" style="margin-bottom:14px;">Exemples de réalisations</div>
+          <div class="ex-carousel-wrapper" id="exWrapper"
+               onmouseenter="exPause()" onmouseleave="exResume()">
+            <div class="ex-carousel-track" id="exTrack">
 
-            <!-- Example 1: Salon de coiffure -->
-            <div class="ex-browser active" id="ex0">
-              <div class="ex-bar">
-                <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
-                <div class="ex-addr"></div>
-                <span style="font-size:7px;color:#7a7a96;margin-left:6px;white-space:nowrap;">elise-coiffure.fr</span>
+              <!-- ① Salon de coiffure — fond clair, minimaliste scandinave -->
+              <div class="ex-browser">
+                <div class="ex-bar" style="background:#f5f2ee;border-bottom:1px solid #e8e2da;">
+                  <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
+                  <div class="ex-addr" style="background:#e8e2da;"></div>
+                  <span style="font-size:6.5px;color:#a09080;margin-left:6px;white-space:nowrap;">elise-coiffure.fr</span>
+                </div>
+                <div class="ex-body" style="background:#faf8f5;">
+                  <!-- Nav blanche épurée -->
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#fff;border-bottom:1px solid #f0ebe4;">
+                    <span style="font-size:8px;font-weight:700;color:#2a1a14;letter-spacing:.14em;font-style:italic;">Élise Coiffure</span>
+                    <div style="display:flex;gap:10px;">
+                      <span style="font-size:6px;color:#9a8070;">Services</span>
+                      <span style="font-size:6px;color:#9a8070;">Tarifs</span>
+                      <span style="font-size:6px;color:#9a8070;">Contact</span>
+                    </div>
+                  </div>
+                  <!-- Hero avec bande rose pastel -->
+                  <div style="background:linear-gradient(160deg,#fce8ee 0%,#fdf4f7 100%);padding:16px 14px 13px;border-bottom:1px solid #f0dde6;">
+                    <div style="font-size:5.5px;color:#c4899a;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;">Salon de coiffure &amp; beauté</div>
+                    <div style="font-size:11px;font-weight:700;color:#2a1a1e;line-height:1.3;margin-bottom:6px;">Sublimez votre beauté,<br>à deux pas de chez vous.</div>
+                    <div style="font-size:6.5px;color:#9a7080;line-height:1.6;margin-bottom:10px;">Coupes · Colorations · Soins · Extensions<br>Rendez-vous en ligne 24h/24</div>
+                    <span style="background:#c4899a;color:#fff;font-size:6px;font-weight:700;padding:4px 11px;border-radius:20px;display:inline-block;">Prendre rendez-vous →</span>
+                  </div>
+                  <!-- Tarifs en ligne claire -->
+                  <div style="display:flex;gap:0;border-top:1px solid #f0ebe4;">
+                    <div style="flex:1;text-align:center;padding:8px 4px;border-right:1px solid #f0ebe4;">
+                      <div style="font-size:9px;font-weight:700;color:#c4899a;">25€</div>
+                      <div style="font-size:5.5px;color:#9a8070;margin-top:1px;">Coupe femme</div>
+                    </div>
+                    <div style="flex:1;text-align:center;padding:8px 4px;border-right:1px solid #f0ebe4;">
+                      <div style="font-size:9px;font-weight:700;color:#c4899a;">55€</div>
+                      <div style="font-size:5.5px;color:#9a8070;margin-top:1px;">Couleur</div>
+                    </div>
+                    <div style="flex:1;text-align:center;padding:8px 4px;">
+                      <div style="font-size:9px;font-weight:700;color:#c4899a;">18€</div>
+                      <div style="font-size:5.5px;color:#9a8070;margin-top:1px;">Soin profond</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ex-badge" style="background:#fce8ee;color:#c4899a;border-color:rgba(196,137,154,.2);">✓ Livré en 40 h — Salon de coiffure</div>
               </div>
-              <div class="ex-body">
-                <div class="ex-salon-nav">
-                  <span class="ex-salon-logo">✂ ÉLISE COIFFURE</span>
-                  <div class="ex-salon-links">
-                    <span>Services</span><span>Tarifs</span><span>Contact</span>
+
+              <!-- ② Garage — sombre charcoal + orange industriel -->
+              <div class="ex-browser">
+                <div class="ex-bar" style="background:#111;border-bottom:1px solid #222;">
+                  <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
+                  <div class="ex-addr" style="background:#1e1e1e;"></div>
+                  <span style="font-size:6.5px;color:#555;margin-left:6px;white-space:nowrap;">garage-martin.fr</span>
+                </div>
+                <div class="ex-body" style="background:#0e0e0e;">
+                  <!-- Nav charbon -->
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#111;border-bottom:1px solid #1e1e1e;">
+                    <span style="font-size:8px;font-weight:700;color:#fff;letter-spacing:.1em;">GARAGE MARTIN</span>
+                    <div style="background:#ff6b2b;color:#fff;font-size:6px;font-weight:700;padding:3px 8px;border-radius:4px;">URGENCE 24H</div>
+                  </div>
+                  <!-- Hero pleine largeur avec accent orange -->
+                  <div style="background:#111;padding:16px 14px 13px;border-left:3px solid #ff6b2b;">
+                    <div style="font-size:5.5px;color:#555;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;">Agréé toutes marques · Certifié RGE</div>
+                    <div style="font-size:11px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:5px;">Votre voiture entre<br>de bonnes mains.</div>
+                    <div style="font-size:6.5px;color:#666;line-height:1.6;margin-bottom:9px;">Révision · Freinage · Climatisation · Carrosserie<br>Devis gratuit — Prêt de véhicule offert</div>
+                    <span style="background:#ff6b2b;color:#fff;font-size:6px;font-weight:700;padding:4px 11px;border-radius:4px;display:inline-block;">Demander un devis →</span>
+                  </div>
+                  <!-- Stats rapides -->
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#1e1e1e;border-top:1px solid #1e1e1e;">
+                    <div style="background:#0e0e0e;text-align:center;padding:8px 4px;">
+                      <div style="font-size:10px;font-weight:700;color:#ff6b2b;">20 ans</div>
+                      <div style="font-size:5.5px;color:#555;margin-top:1px;">d'expérience</div>
+                    </div>
+                    <div style="background:#0e0e0e;text-align:center;padding:8px 4px;border-left:1px solid #1e1e1e;border-right:1px solid #1e1e1e;">
+                      <div style="font-size:10px;font-weight:700;color:#ff6b2b;">2h</div>
+                      <div style="font-size:5.5px;color:#555;margin-top:1px;">réponse devis</div>
+                    </div>
+                    <div style="background:#0e0e0e;text-align:center;padding:8px 4px;">
+                      <div style="font-size:10px;font-weight:700;color:#ff6b2b;">0€</div>
+                      <div style="font-size:5.5px;color:#555;margin-top:1px;">devis gratuit</div>
+                    </div>
                   </div>
                 </div>
-                <div class="ex-salon-hero">
-                  <div class="ex-salon-h1">Sublimez votre beauté,<br>à deux pas de chez vous.</div>
-                  <div class="ex-salon-sub">Colorations · Coupes · Soins capillaires<br>Sur rendez-vous uniquement — Ouvert 7j/7</div>
-                  <div class="ex-salon-btn">Prendre rendez-vous →</div>
-                </div>
-                <div class="ex-cards-3">
-                  <div class="ex-card-mini" style="background:#1e0e18;border:1px solid rgba(200,80,120,.2);border-radius:6px;">
-                    <span class="ico">✂️</span>
-                    <span class="lbl" style="color:#e8b0c8;">Coupe</span>
-                    <span class="prc" style="color:#9a5070;">dès 25 €</span>
-                  </div>
-                  <div class="ex-card-mini" style="background:#1e0e18;border:1px solid rgba(200,80,120,.2);border-radius:6px;">
-                    <span class="ico">🎨</span>
-                    <span class="lbl" style="color:#e8b0c8;">Couleur</span>
-                    <span class="prc" style="color:#9a5070;">dès 55 €</span>
-                  </div>
-                  <div class="ex-card-mini" style="background:#1e0e18;border:1px solid rgba(200,80,120,.2);border-radius:6px;">
-                    <span class="ico">💆</span>
-                    <span class="lbl" style="color:#e8b0c8;">Soin</span>
-                    <span class="prc" style="color:#9a5070;">dès 18 €</span>
-                  </div>
-                </div>
+                <div class="ex-badge" style="background:#111;color:#ff6b2b;border-color:rgba(255,107,43,.2);">✓ Livré en 36 h — Mécanique automobile</div>
               </div>
-              <div class="ex-badge">✓ Livré en 40 h — Salon de coiffure</div>
+
+              <!-- ③ Restaurant — vert forêt / crème, style bistro chic -->
+              <div class="ex-browser">
+                <div class="ex-bar" style="background:#1d2e20;border-bottom:1px solid #283c2b;">
+                  <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
+                  <div class="ex-addr" style="background:#283c2b;"></div>
+                  <span style="font-size:6.5px;color:#5a7860;margin-left:6px;white-space:nowrap;">terroir-gourmand.fr</span>
+                </div>
+                <div class="ex-body" style="background:#1d2e20;">
+                  <!-- Nav vert foncé -->
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#1d2e20;border-bottom:1px solid #283c2b;">
+                    <span style="font-size:8px;font-weight:400;color:#e8ddc8;letter-spacing:.06em;font-style:italic;">Terroir Gourmand</span>
+                    <div style="display:flex;gap:10px;">
+                      <span style="font-size:6px;color:#7a9a80;">Menu</span>
+                      <span style="font-size:6px;color:#7a9a80;">Réservation</span>
+                      <span style="font-size:6px;color:#7a9a80;">Traiteur</span>
+                    </div>
+                  </div>
+                  <!-- Hero avec galerie à droite simulée -->
+                  <div style="display:grid;grid-template-columns:1.4fr 1fr;">
+                    <div style="padding:14px 12px;background:#1d2e20;border-right:1px solid #283c2b;">
+                      <div style="font-size:5.5px;color:#7a9a80;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Cuisine du terroir</div>
+                      <div style="font-size:10.5px;font-weight:600;color:#e8ddc8;line-height:1.3;margin-bottom:5px;">La cuisine de<br>chez nous.</div>
+                      <div style="font-size:6px;color:#7a9a80;line-height:1.5;margin-bottom:9px;">Produits locaux · Saison<br>Mardi – Dimanche</div>
+                      <span style="background:#e8ddc8;color:#1d2e20;font-size:6px;font-weight:700;padding:4px 9px;border-radius:3px;display:inline-block;">Réserver →</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:2px;padding:6px;">
+                      <div style="flex:1;border-radius:4px;background:linear-gradient(135deg,#2e4030,#1a2e1e);"></div>
+                      <div style="flex:1;border-radius:4px;background:linear-gradient(135deg,#3a4e38,#2e4030);"></div>
+                    </div>
+                  </div>
+                  <!-- Menu du jour -->
+                  <div style="padding:7px 14px 9px;border-top:1px solid #283c2b;">
+                    <div style="font-size:5.5px;color:#7a9a80;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Menu du jour — 14,90 €</div>
+                    <div style="display:flex;flex-direction:column;gap:3px;">
+                      <div style="display:flex;justify-content:space-between;"><span style="font-size:6px;color:#e8ddc8;">Soupe de légumes maison</span><span style="font-size:6px;color:#7a9a80;">Entrée</span></div>
+                      <div style="display:flex;justify-content:space-between;"><span style="font-size:6px;color:#e8ddc8;">Joue de porc braisée, purée</span><span style="font-size:6px;color:#7a9a80;">Plat</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ex-badge" style="background:#283c2b;color:#a8c8a0;border-color:rgba(120,180,100,.15);">✓ Livré en 44 h — Restauration</div>
+              </div>
+
+              <!-- ④ Plomberie — fond blanc/gris pro, bleu royal, très lisible -->
+              <div class="ex-browser">
+                <div class="ex-bar" style="background:#eef2f6;border-bottom:1px solid #dce4ee;">
+                  <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
+                  <div class="ex-addr" style="background:#dce4ee;"></div>
+                  <span style="font-size:6.5px;color:#8090a8;margin-left:6px;white-space:nowrap;">plomberie-durand.fr</span>
+                </div>
+                <div class="ex-body" style="background:#f6f8fb;">
+                  <!-- Nav blanche pro -->
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#fff;border-bottom:1px solid #e4ecf4;">
+                    <span style="font-size:8px;font-weight:700;color:#1a2e48;letter-spacing:.06em;">PLOMBERIE DURAND</span>
+                    <span style="background:#dc2626;color:#fff;font-size:5.5px;font-weight:700;padding:2px 7px;border-radius:3px;">URGENCE 7J/7</span>
+                  </div>
+                  <!-- Hero bleu royal -->
+                  <div style="background:linear-gradient(135deg,#1e40af,#1a2e48);padding:15px 14px 12px;">
+                    <div style="font-size:5.5px;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Dépannage rapide &amp; installation</div>
+                    <div style="font-size:11px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:5px;">Fuite d'eau ?<br>On arrive en 2h.</div>
+                    <div style="font-size:6.5px;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:9px;">Chauffe-eau · Débouchage · Sanitaires<br>Devis gratuit — Pas de surprise à la facture</div>
+                    <span style="background:#fff;color:#1e40af;font-size:6px;font-weight:700;padding:4px 11px;border-radius:3px;display:inline-block;">Appeler maintenant →</span>
+                  </div>
+                  <!-- Services sur fond clair -->
+                  <div style="padding:7px 14px 10px;background:#f6f8fb;">
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:#fff;border-radius:5px;border:1px solid #e4ecf4;">
+                        <span style="width:5px;height:5px;border-radius:50%;background:#1e40af;flex-shrink:0;display:block;"></span>
+                        <span style="font-size:6.5px;color:#1a2e48;font-weight:600;">Fuite d'eau — détection &amp; réparation immédiate</span>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:#fff;border-radius:5px;border:1px solid #e4ecf4;">
+                        <span style="width:5px;height:5px;border-radius:50%;background:#1e40af;flex-shrink:0;display:block;"></span>
+                        <span style="font-size:6.5px;color:#1a2e48;font-weight:600;">Chauffe-eau — installation &amp; remplacement toutes marques</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ex-badge" style="background:#eef2f6;color:#1e40af;border-color:rgba(30,64,175,.15);">✓ Livré en 42 h — Plomberie &amp; chauffage</div>
+              </div>
+
+              <!-- ⑤ Boulangerie — crème chaude, typographie artisan -->
+              <div class="ex-browser">
+                <div class="ex-bar" style="background:#f5ede0;border-bottom:1px solid #e8d8c0;">
+                  <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
+                  <div class="ex-addr" style="background:#e8d8c0;"></div>
+                  <span style="font-size:6.5px;color:#a08060;margin-left:6px;white-space:nowrap;">au-pain-dore.fr</span>
+                </div>
+                <div class="ex-body" style="background:#fdf8f0;">
+                  <!-- Nav crème / brun -->
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#fff8ee;border-bottom:1px solid #f0e4d0;">
+                    <div>
+                      <span style="font-size:9px;font-weight:700;color:#3d2010;font-style:italic;">Au Pain Doré</span>
+                      <span style="font-size:5.5px;color:#c87b3a;margin-left:5px;letter-spacing:.06em;">depuis 1987</span>
+                    </div>
+                    <div style="display:flex;gap:9px;">
+                      <span style="font-size:6px;color:#a07050;">Pains</span>
+                      <span style="font-size:6px;color:#a07050;">Pâtisseries</span>
+                      <span style="font-size:6px;color:#a07050;">Commandes</span>
+                    </div>
+                  </div>
+                  <!-- Hero chaud et lumineux -->
+                  <div style="background:linear-gradient(160deg,#fff3e0,#fdf8f0);padding:15px 14px 12px;border-bottom:1px solid #f0e4d0;">
+                    <div style="font-size:5.5px;color:#c87b3a;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;">Artisan boulanger · Maître pâtissier</div>
+                    <div style="font-size:11px;font-weight:700;color:#3d2010;line-height:1.3;margin-bottom:5px;">Le bon pain de chez nous,<br>cuit deux fois par jour.</div>
+                    <div style="font-size:6.5px;color:#a07050;line-height:1.6;margin-bottom:9px;">Pains bio · Viennoiseries · Pâtisseries maison<br>Ouvert 7j/7 dès 6h30</div>
+                    <span style="background:#c87b3a;color:#fff;font-size:6px;font-weight:700;padding:4px 11px;border-radius:20px;display:inline-block;">Commander en ligne →</span>
+                  </div>
+                  <!-- Gamme produits -->
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid #f0e4d0;">
+                    <div style="text-align:center;padding:8px 4px;border-right:1px solid #f0e4d0;">
+                      <div style="font-size:7px;font-weight:700;color:#3d2010;margin-bottom:2px;">Pains</div>
+                      <div style="font-size:5.5px;color:#a07050;">Tradition · Bio · Seigle</div>
+                      <div style="font-size:6.5px;font-weight:700;color:#c87b3a;margin-top:2px;">dès 1,80€</div>
+                    </div>
+                    <div style="text-align:center;padding:8px 4px;border-right:1px solid #f0e4d0;">
+                      <div style="font-size:7px;font-weight:700;color:#3d2010;margin-bottom:2px;">Viennoiseries</div>
+                      <div style="font-size:5.5px;color:#a07050;">Croissant · Brioche</div>
+                      <div style="font-size:6.5px;font-weight:700;color:#c87b3a;margin-top:2px;">dès 1,20€</div>
+                    </div>
+                    <div style="text-align:center;padding:8px 4px;">
+                      <div style="font-size:7px;font-weight:700;color:#3d2010;margin-bottom:2px;">Pâtisseries</div>
+                      <div style="font-size:5.5px;color:#a07050;">Tartes · Éclairs</div>
+                      <div style="font-size:6.5px;font-weight:700;color:#c87b3a;margin-top:2px;">dès 2,80€</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ex-badge" style="background:#fff8ee;color:#c87b3a;border-color:rgba(200,123,58,.2);">✓ Livré en 38 h — Boulangerie &amp; pâtisserie</div>
+              </div>
+
+            </div><!-- /ex-carousel-track -->
+
+            <!-- Navigation arrows -->
+            <button class="ex-nav-btn ex-prev" onclick="exSlide(-1)" aria-label="Précédent">
+              <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="ex-nav-btn ex-next" onclick="exSlide(1)" aria-label="Suivant">
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <!-- Dots -->
+            <div class="ex-dots" id="exDots">
+              <span class="ex-dot active" onclick="exGo(0)"></span>
+              <span class="ex-dot" onclick="exGo(1)"></span>
+              <span class="ex-dot" onclick="exGo(2)"></span>
+              <span class="ex-dot" onclick="exGo(3)"></span>
+              <span class="ex-dot" onclick="exGo(4)"></span>
             </div>
 
-            <!-- Example 2: Garage -->
-            <div class="ex-browser" id="ex1">
-              <div class="ex-bar">
-                <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
-                <div class="ex-addr"></div>
-                <span style="font-size:7px;color:#7a7a96;margin-left:6px;white-space:nowrap;">garage-martin-auto.fr</span>
-              </div>
-              <div class="ex-body">
-                <div class="ex-garage-nav">
-                  <span class="ex-garage-logo">🔧 GARAGE MARTIN</span>
-                  <div class="ex-garage-links">
-                    <span>Prestations</span><span>Devis</span><span>Contact</span>
-                  </div>
-                </div>
-                <div class="ex-garage-hero">
-                  <div class="ex-garage-h1">Expert en mécanique<br>depuis 20 ans.</div>
-                  <div class="ex-garage-sub">Révisions · Diagnostics · Pneumatiques<br>Devis gratuit — Réponse en 2h</div>
-                  <div class="ex-garage-btn">Demander un devis →</div>
-                </div>
-                <div class="ex-garage-list">
-                  <div class="ex-garage-item">
-                    <span class="ico">🔧</span>
-                    <span class="txt">Révision complète — vidange, filtres, freins</span>
-                  </div>
-                  <div class="ex-garage-item">
-                    <span class="ico">🔍</span>
-                    <span class="txt">Diagnostic électronique — valise homologuée</span>
-                  </div>
-                  <div class="ex-garage-item">
-                    <span class="ico">🚗</span>
-                    <span class="txt">Contrôle technique — préparation &amp; accompagnement</span>
-                  </div>
-                </div>
-              </div>
-              <div class="ex-badge">✓ Livré en 36 h — Mécanique automobile</div>
-            </div>
-
-            <!-- Example 3: Restaurant -->
-            <div class="ex-browser" id="ex2">
-              <div class="ex-bar">
-                <div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
-                <div class="ex-addr"></div>
-                <span style="font-size:7px;color:#7a7a96;margin-left:6px;white-space:nowrap;">terroir-gourmand.fr</span>
-              </div>
-              <div class="ex-body">
-                <div class="ex-resto-nav">
-                  <span class="ex-resto-logo">🍽 TERROIR GOURMAND</span>
-                  <div class="ex-resto-links">
-                    <span>Menu</span><span>Réservation</span><span>Traiteur</span>
-                  </div>
-                </div>
-                <div class="ex-resto-hero">
-                  <div class="ex-resto-h1">La cuisine de chez nous,<br>faite avec passion.</div>
-                  <div class="ex-resto-sub">Cuisine traditionnelle · Produits locaux · Formule midi<br>Ouvert du mardi au dimanche — Réservation conseillée</div>
-                  <div class="ex-resto-btn">Réserver une table →</div>
-                </div>
-                <div class="ex-resto-gallery">
-                  <div class="ex-resto-img" style="background:linear-gradient(135deg,#3a2a10,#1a1508);"></div>
-                  <div class="ex-resto-img" style="background:linear-gradient(135deg,#2a1a08,#3a2a10);"></div>
-                  <div class="ex-resto-img" style="background:linear-gradient(135deg,#1a1508,#2a2010);"></div>
-                </div>
-                <div style="padding:6px 8px 10px;text-align:center;">
-                  <span style="font-size:6px;color:#7a6030;letter-spacing:.08em;">GALERIE · PLATS DU JOUR · ÉVÉNEMENTS PRIVÉS</span>
-                </div>
-              </div>
-              <div class="ex-badge">✓ Livré en 44 h — Restauration</div>
-            </div>
-
-          </div><!-- /ex-browsers -->
+          </div><!-- /ex-carousel-wrapper -->
         </div><!-- /ex-col -->
 
       </div><!-- /proc-wrap -->
@@ -1045,34 +1281,239 @@
       </div>
       <div class="why-grid">
         <div class="why-item r0">
-          <div class="why-ico">🎯</div>
+          <div class="why-ico"><i data-feather="target"></i></div>
           <div>
             <h4>Spécialistes TPE &amp; artisans</h4>
             <p>On ne fait pas de grands groupes. Notre seul marché, c'est vous : coiffeurs, boulangers, artisans, restaurateurs, garages.</p>
           </div>
         </div>
         <div class="why-item r0 d1">
-          <div class="why-ico">💶</div>
+          <div class="why-ico"><i data-feather="tag"></i></div>
           <div>
             <h4>Prix juste &amp; transparent</h4>
             <p>Pas d'abonnement caché. Un tarif fixe annoncé dès le départ, pensé pour les petites structures.</p>
           </div>
         </div>
         <div class="why-item r0 d2">
-          <div class="why-ico">⚡</div>
+          <div class="why-ico"><i data-feather="zap"></i></div>
           <div>
             <h4>Livraison en 48 heures</h4>
             <p>Chaque journée sans site, c'est des clients perdus. On s'active. Votre site est en ligne avant la semaine prochaine.</p>
           </div>
         </div>
         <div class="why-item r0 d3">
-          <div class="why-ico">🤝</div>
+          <div class="why-ico"><i data-feather="user-check"></i></div>
           <div>
             <h4>Un vrai interlocuteur</h4>
             <p>Un contact direct, disponible, qui connaît votre dossier. Pas de hotline, pas de ticket, pas d'attente.</p>
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- TARIFS -->
+  <section id="tarifs">
+    <div class="wrap">
+
+      <!-- En-tête -->
+      <div class="tarifs-head">
+        <div class="tag-line r0" style="justify-content:center">Offres &amp; tarifs</div>
+        <h2 class="s-title r0 d1">Simple, transparent,<br>sans mauvaise surprise.</h2>
+        <p class="s-sub r0 d2" style="max-width:420px;margin:14px auto 0;">Un prix fixe annoncé dès le départ. Pas d'abonnement forcé. Pas de ligne cachée.</p>
+      </div>
+
+      <!-- 3 cartes -->
+      <div class="tarifs-grid r0">
+
+        <!-- Essentiel -->
+        <div class="tarif-card">
+          <div class="tarif-name">Essentiel</div>
+          <div class="tarif-price"><sup>€</sup>490</div>
+          <div class="tarif-price-note">paiement unique · livraison 48h</div>
+          <div class="tarif-divider"></div>
+          <ul class="tarif-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Site <strong>1 page</strong> — accueil, services, contact</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span><strong>100 % mobile</strong> &amp; responsive</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Formulaire de contact intégré</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Nom de domaine offert <strong>1 an</strong></span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Hébergement HTTPS offert <strong>1 an</strong></span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Modifications illimitées avant mise en ligne</span>
+            </li>
+          </ul>
+          <a class="tarif-cta tarif-cta-ghost" href="#cta">Démarrer →</a>
+        </div>
+
+        <!-- Pro — recommandé -->
+        <div class="tarif-card featured">
+          <span class="tarif-badge">Le plus choisi</span>
+          <div class="tarif-name" style="color:var(--gold);">Pro</div>
+          <div class="tarif-price"><sup>€</sup>790</div>
+          <div class="tarif-price-note">paiement unique · livraison 48h</div>
+          <div class="tarif-divider"></div>
+          <ul class="tarif-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Site <strong>jusqu'à 5 pages</strong> — accueil, services, galerie, avis, contact</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span><strong>Design premium</strong> sur-mesure à votre image</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span><strong>SEO local</strong> — optimisation Google pour votre ville</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Fiche <strong>Google Business</strong> configurée &amp; optimisée</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Bouton WhatsApp &amp; formulaire de rappel</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Galerie photos &amp; section avis clients</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Nom de domaine + hébergement offerts <strong>1 an</strong></span>
+            </li>
+          </ul>
+          <a class="tarif-cta tarif-cta-solid" href="#cta">Démarrer →</a>
+        </div>
+
+        <!-- Prestige -->
+        <div class="tarif-card">
+          <div class="tarif-name">Prestige</div>
+          <div class="tarif-price"><sup>€</sup>1290</div>
+          <div class="tarif-price-note">paiement unique · livraison 48h</div>
+          <div class="tarif-divider"></div>
+          <ul class="tarif-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Pages <strong>illimitées</strong> — architecture complète</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Design <strong>haut de gamme</strong> + animations</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>SEO avancé + <strong>blog</strong> intégré</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Intégration <strong>réservation en ligne</strong></span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Rapport mensuel de visites &amp; performances</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span><strong>3 mois de maintenance</strong> inclus</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+              <span>Support <strong>prioritaire</strong> — réponse sous 4h</span>
+            </li>
+          </ul>
+          <a class="tarif-cta tarif-cta-ghost" href="#cta">Démarrer →</a>
+        </div>
+
+      </div><!-- /tarifs-grid -->
+
+      <!-- Maintenance mensuelle -->
+      <div class="tarif-maintenance r0" style="margin-top:2px;">
+        <div class="tarif-maint-left">
+          <h4>Maintenance mensuelle</h4>
+          <p>Mises à jour illimitées (textes, photos, horaires), surveillance du site 24h/24, sauvegardes hebdomadaires, renouvellement domaine &amp; hébergement géré. Résiliable à tout moment, sans engagement.</p>
+        </div>
+        <div class="tarif-maint-right">
+          <div class="tarif-maint-price"><sup style="font-size:.5em;vertical-align:top;margin-top:.3em;color:var(--gold);">€</sup>29<span style="font-size:.5em;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:300;">/mois</span></div>
+          <div class="tarif-maint-note">Sans engagement · Résiliable à tout moment</div>
+          <a class="tarif-cta tarif-cta-ghost" href="#cta" style="margin-top:14px;padding:9px 20px;font-size:.76rem;display:inline-block;text-align:center;">En savoir plus →</a>
+        </div>
+      </div>
+
+      <!-- Conditions du business plan -->
+      <div class="tarif-conditions">
+        <div class="conditions-head r0">
+          <div class="tag-line" style="justify-content:center">Conditions</div>
+          <h3 class="s-title r0 d1" style="font-size:clamp(1.6rem,3vw,2.4rem);">Ce que ça implique,<br>en toute transparence.</h3>
+        </div>
+        <div class="conditions-grid">
+
+          <div class="cond-item r0">
+            <span class="cond-num">01</span>
+            <div>
+              <h5>Paiement en deux fois</h5>
+              <p><strong>50 % à la commande</strong>, solde à la livraison avant mise en ligne. Paiement par virement ou chèque. Aucun frais supplémentaire. La facture définitive correspond exactement au devis signé.</p>
+            </div>
+          </div>
+
+          <div class="cond-item r0 d1">
+            <span class="cond-num">02</span>
+            <div>
+              <h5>Délai garanti 48h</h5>
+              <p>Le délai de <strong>48 heures ouvrées</strong> court à partir de la validation du devis et du versement de l'acompte. Si vous tardez à fournir des éléments (textes, photos), le délai est décalé en conséquence.</p>
+            </div>
+          </div>
+
+          <div class="cond-item r0 d2">
+            <span class="cond-num">03</span>
+            <div>
+              <h5>Renouvellement après 1 an</h5>
+              <p>Le domaine se renouvelle à <strong>15 €/an</strong>, l'hébergement à <strong>120 €/an</strong>. Vous êtes prévenu 2 mois avant l'échéance. Si vous choisissez la maintenance mensuelle, tout est inclus et géré automatiquement.</p>
+            </div>
+          </div>
+
+          <div class="cond-item r0 d3">
+            <span class="cond-num">04</span>
+            <div>
+              <h5>Propriété totale du site</h5>
+              <p>À règlement complet, <strong>vous êtes propriétaire</strong> de votre site, de votre domaine et de tous les contenus créés. Vous pouvez partir chez un autre hébergeur à tout moment, sans pénalité ni rançon.</p>
+            </div>
+          </div>
+
+          <div class="cond-item r0">
+            <span class="cond-num">05</span>
+            <div>
+              <h5>Garantie satisfaction</h5>
+              <p>Votre site n'est jamais mis en ligne sans votre <strong>validation explicite</strong>. Modifications illimitées pendant la création. Si le résultat ne vous convient pas, nous remboursons l'acompte — sans discussion.</p>
+            </div>
+          </div>
+
+          <div class="cond-item r0 d1">
+            <span class="cond-num">06</span>
+            <div>
+              <h5>Sans engagement, sans surprise</h5>
+              <p>La maintenance mensuelle est <strong>résiliable à tout moment</strong> avec un préavis d'un mois. Aucun contrat longue durée imposé. Vous gardez le contrôle total à chaque étape.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -1322,9 +1763,12 @@
   </div>
 
   <script>
+  // ── FEATHER ICONS ─────────────────────────────────────────────
+  feather.replace({ 'stroke-width': 1.5 });
+
   // ── CONFIG ────────────────────────────────────────────────────
   // Remplacez par votre adresse email pour recevoir les leads
-  const SILEX_EMAIL = 'contact@silex.fr';
+  const SILEX_EMAIL = 'christo.robin@icloud.com';
 
   // ── CURSOR ────────────────────────────────────────────────────
   const blob = document.getElementById('blob');
@@ -1403,11 +1847,22 @@
   }, { threshold:.5 });
   document.querySelectorAll('.num-val').forEach(el => numObs.observe(el));
 
-  // ── EXAMPLE TABS ──────────────────────────────────────────────
-  function setEx(idx){
-    document.querySelectorAll('.ex-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
-    document.querySelectorAll('.ex-browser').forEach((b,i) => b.classList.toggle('active', i===idx));
+  // ── EXAMPLE CAROUSEL ──────────────────────────────────────────
+  let exCurrent = 0;
+  const exTotal = 5;
+  let exTimer = null;
+  const exTrack = document.getElementById('exTrack');
+  const exDotEls = document.querySelectorAll('.ex-dot');
+
+  function exGo(idx){
+    exCurrent = (idx + exTotal) % exTotal;
+    exTrack.style.transform = `translateX(-${exCurrent * 100}%)`;
+    exDotEls.forEach((d,i) => d.classList.toggle('active', i === exCurrent));
   }
+  function exSlide(dir){ exGo(exCurrent + dir); }
+  function exPause(){ clearInterval(exTimer); }
+  function exResume(){ exTimer = setInterval(() => exSlide(1), 4000); }
+  exResume();
 
   // ── FAQ ACCORDION ─────────────────────────────────────────────
   function toggleFaq(btn){
@@ -1476,7 +1931,7 @@
           <span class="admin-lead-phone">${l.phone}</span>
           <span class="admin-lead-date">${l.date}</span>
         </div>`
-      ).join('') + `<button class="admin-clear" onclick="clearLeads()">🗑 Effacer tous les leads</button>`;
+      ).join('') + `<button class="admin-clear" onclick="clearLeads()">Effacer tous les leads</button>`;
     }
     document.getElementById('adminBackdrop').classList.add('open');
     document.body.style.overflow = 'hidden';
